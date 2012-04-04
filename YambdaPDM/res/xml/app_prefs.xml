@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <EditTextPreference android:key="user" 
+        android:title="@string/userTitle" 
+        android:summary="@string/userSum"/>
+    <EditTextPreference android:key="pass" 
+        android:title="@string/passTitle" 
+        android:summary="@string/passSum"
+        android:password="true"/>
+    <EditTextPreference android:key="url" 
+        android:title="@string/urlTitle" 
+        android:summary="@string/urlSum"/>
+</PreferenceScreen>

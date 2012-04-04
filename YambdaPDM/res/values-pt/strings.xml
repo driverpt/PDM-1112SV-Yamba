@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="titleStatus">Atualização de Estado</string>
+    <string name="hintText">Escreva o estado em 140 carateres</string>
+    <string name="buttonUpdate">Enviar</string>
+    <string name="buttonBusy">A ser enviado</string>
+</resources>
