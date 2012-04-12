@@ -1,21 +1,20 @@
 package pt.isel.pdm.Yamba;
 
-import android.app.Activity;
-import android.content.Intent;
+import winterwell.jtwitter.Twitter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.*;
-import winterwell.jtwitter.Twitter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
-public class StatusActivity extends Activity implements OnClickListener, OnSharedPreferenceChangeListener {
+public class StatusActivity extends PreferencesEnabledActivity implements OnClickListener, OnSharedPreferenceChangeListener {
+    
     private static final String TAG = "PDM";
     private Button              submit;
     private EditText            text;
@@ -46,27 +45,6 @@ public class StatusActivity extends Activity implements OnClickListener, OnShare
         disableSubmit();
         // Update status and enable submit in background
         new UpdateStatusTask().execute(text.getText().toString());
-    }
-
-    /** Initialize options menu */
-    @Override
-    public boolean onCreateOptionsMenu(Menu m) {
-        getMenuInflater().inflate(R.menu.status, m);
-        return true;
-    }
-
-    /** Process Item Menu selected */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.terminate:
-                finish();
-                return true;
-            case R.id.prefs:
-                startActivity(new Intent(this, PrefsActivity.class));
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /** Invalidates the twitter when changing preferences */
