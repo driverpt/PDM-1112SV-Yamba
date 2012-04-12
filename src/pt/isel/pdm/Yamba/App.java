@@ -1,30 +1,32 @@
 package pt.isel.pdm.Yamba;
 
-import winterwell.jtwitter.Twitter;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 import android.widget.Button;
 
+import winterwell.jtwitter.Twitter;
+
 public class App extends Application {
-    public Button             lastSubmit;
+    public  Button            lastSubmit;
+    public  Button            lastRefresh;
     private Twitter           twitter;
     private SharedPreferences prefs;
 
     @Override
     public void onCreate() {
         initSharedPrefs();
-        prefs.registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                initTwitter();
+        prefs.registerOnSharedPreferenceChangeListener( new OnSharedPreferenceChangeListener() {
+            public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
+                twitter = null;
             }
-        });
+        } );
         super.onCreate();
     }
 
     public Twitter getTwitter() {
-        if (twitter == null) {
+        if ( twitter == null ) {
             initTwitter();
         }
         return twitter;
@@ -35,14 +37,14 @@ public class App extends Application {
     }
 
     private void initSharedPrefs() {
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs = PreferenceManager.getDefaultSharedPreferences( this );
     }
 
     private void initTwitter() {
-        String username = prefs.getString("PDM_USERNAME", "");
-        String password = prefs.getString("PDM_PASSWORD", "");
-        String url = prefs.getString("PDM_URL", "");
-        twitter = new Twitter(username, password);
-        twitter.setAPIRootUrl(url);
+        String username = prefs.getString( "user", "" );
+        String password = prefs.getString( "pass", "" );
+        String url = prefs.getString( "url", "" );
+        twitter = new Twitter( username, password );
+        twitter.setAPIRootUrl( url );
     }
 }
