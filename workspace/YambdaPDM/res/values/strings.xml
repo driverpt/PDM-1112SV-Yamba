@@ -18,4 +18,6 @@
     <string name="prefs">Settings</string>
     <string name="new_tweet">New Tweet</string>
     <string name="refresh">Refresh</string>
+    <string name="timeline">Timeline</string>
+    <string name="main_menu">Main Menu</string>
 </resources>
