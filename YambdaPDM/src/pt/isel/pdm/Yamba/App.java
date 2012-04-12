@@ -8,7 +8,7 @@ import android.widget.Button;
 
 import winterwell.jtwitter.Twitter;
 
-public class App extends Application {
+public class App extends Application implements OnSharedPreferenceChangeListener {
     public  Button            lastSubmit;
     public  Button            lastRefresh;
     private Twitter           twitter;
@@ -17,11 +17,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         initSharedPrefs();
-        prefs.registerOnSharedPreferenceChangeListener( new OnSharedPreferenceChangeListener() {
-            public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
-                twitter = null;
-            }
-        } );
+        prefs.registerOnSharedPreferenceChangeListener(this);
         super.onCreate();
     }
 
@@ -32,6 +28,10 @@ public class App extends Application {
         return twitter;
     }
 
+    public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
+        twitter = null;
+    }    
+    
     public SharedPreferences getSharedPreferences() {
         return prefs;
     }

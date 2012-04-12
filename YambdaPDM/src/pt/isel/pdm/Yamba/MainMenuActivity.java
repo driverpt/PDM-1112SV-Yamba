@@ -3,10 +3,6 @@ package pt.isel.pdm.Yamba;
 import java.util.LinkedList;
 import java.util.List;
 
-import android.view.Menu;
-import android.view.MenuItem;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -18,7 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
-public class MainMenuActivity extends Activity {
+public class MainMenuActivity extends PreferencesEnabledActivity {
 
     /*
      * (non-Javadoc)
@@ -39,8 +35,8 @@ public class MainMenuActivity extends Activity {
         setContentView( R.layout.main_menu );
         
         menuItems = new LinkedList< Integer >();
-        menuItems.add( R.string.timeline );
-        menuItems.add( R.string.new_tweet );
+        menuItems.add( VIEW_TWEETS, R.string.timeline  );
+        menuItems.add( NEW_TWEET  , R.string.new_tweet );
         
         GridView grid = ( GridView ) findViewById( R.id.grid );
         grid.setAdapter( new MainMenuAdapter() );
@@ -63,28 +59,7 @@ public class MainMenuActivity extends Activity {
                 }
             }
         } );
-    }
-
-    /** Initialize options menu */
-    @Override
-    public boolean onCreateOptionsMenu(Menu m) {
-        getMenuInflater().inflate(R.menu.status, m);
-        return true;
-    }
-
-    /** Process Item Menu selected */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.terminate:
-                finish();
-                return true;
-            case R.id.prefs:
-                startActivity(new Intent(this, PrefsActivity.class));
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }    
+    } 
     
     private class MainMenuAdapter extends BaseAdapter {
         public int getCount() {
@@ -109,6 +84,7 @@ public class MainMenuActivity extends Activity {
                 textView = ( TextView ) convertView;
             }
             textView.setText( menuItems.get( position ) );
+            textView.setTextSize(40);
             return textView;
         }
     }
