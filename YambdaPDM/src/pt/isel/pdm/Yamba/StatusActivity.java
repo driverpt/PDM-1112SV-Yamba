@@ -1,6 +1,5 @@
 package pt.isel.pdm.Yamba;
 
-import winterwell.jtwitter.Twitter;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
+import winterwell.jtwitter.Twitter;
 
 public class StatusActivity extends Activity implements OnClickListener, OnSharedPreferenceChangeListener {
     private static final String TAG = "PDM";
