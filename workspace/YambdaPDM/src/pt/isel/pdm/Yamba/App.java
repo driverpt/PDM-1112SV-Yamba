@@ -45,6 +45,6 @@ public class App extends Application implements OnSharedPreferenceChangeListener
         String password = prefs.getString( "pass", "" );
         String url = prefs.getString( "url", "" );
         twitter = new Twitter( username, password );
-        twitter.setAPIRootUrl( url );
+        twitter.setAPIRootUrl( url.trim() );
     }
 }
