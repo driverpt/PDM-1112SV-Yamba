@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
+        <item android:id="@+id/create_tweet" 
+          android:icon="@android:drawable/ic_menu_add"
+          android:title="@string/post_tweet">
+    </item>
     <item android:id="@+id/terminate" 
           android:icon="@android:drawable/ic_menu_close_clear_cancel"
           android:title="@string/terminate">
@@ -9,5 +13,4 @@
           android:title="@string/prefs">
     </item>
     
-
 </menu>

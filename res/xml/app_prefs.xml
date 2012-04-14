@@ -10,4 +10,13 @@
     <EditTextPreference android:key="url" 
         android:title="@string/urlTitle" 
         android:summary="@string/urlSum"/>
+    
+    <EditTextPreference android:key="max_chars" 
+        android:title="@string/max_presented_chars" 
+        android:summary="@string/max_presented_chars_sum" />
+    
+    <EditTextPreference android:key="max_tweets" 
+        android:title="@string/max_presented_tweets" 
+        android:summary="@string/max_presented_tweets_sum"/>
+    
 </PreferenceScreen>
