@@ -24,6 +24,12 @@ public abstract class PreferencesEnabledActivity extends Activity {
             case R.id.prefs:
                 startActivity(new Intent(this, PrefsActivity.class));
                 return true;
+            case R.id.create_tweet: {
+                Intent intent = new Intent( this, StatusActivity.class );
+                intent.addFlags( Intent.FLAG_ACTIVITY_NO_HISTORY );
+                startActivity( intent );
+                return true;
+            }   
         }
         return super.onOptionsItemSelected(item);
     }

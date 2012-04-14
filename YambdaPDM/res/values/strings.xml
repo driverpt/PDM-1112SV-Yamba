@@ -18,6 +18,12 @@
     <string name="prefs">Settings</string>
     <string name="new_tweet">New Tweet</string>
     <string name="refresh">Refresh</string>
-    <string name="timeline">Timeline</string>
-    <string name="main_menu">Main Menu</string>
+    <string name="max_presented_chars">Max Chars</string>
+    <string name="max_presented_chars_sum">Maximum number of characters presented per Tweet</string>
+    <string name="max_presented_tweets">Max Tweets</string>
+    <string name="max_presented_tweets_sum">Maximum number of Tweets shown</string>
+    <string name="detail_message_id">Message Id #%1$s</string>
+    <string name="detail">Details</string>
+    <string name="post_tweet">Post</string>
+    <string name="status">Status</string>
 </resources>
