@@ -113,7 +113,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
         protected Void doInBackground( Void ... params ) {
             try {
                 List< Twitter.Status > twitterStatus = ( ( YambaPDMApplication ) getApplication() ).getTwitter()
-                        .getUserTimeline();
+                .getUserTimeline();
 
                 SharedPreferences prefs = ( ( YambaPDMApplication ) getApplication() ).getSharedPreferences();
                 int max_tweets = Integer.valueOf( prefs.getString( PrefsActivity.KEY_MAX_PRESENTED_TWEETS,
@@ -141,16 +141,24 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
             }
             adapter.notifyDataSetChanged();
             Toast.makeText( TimelineActivity.this, String.format(getString(R.string.fetched_elements), timeline.size()) , Toast.LENGTH_LONG )
-                    .show();
+            .show();
             enableRefresh();
         }
 
     }
 
     private void updateTimeline() {
-        UpdateTimelineTask task = new UpdateTimelineTask();
-        timeline.clear();
-        task.execute();
+        if(PrefsActivity.checkPreferences(this)){
+            UpdateTimelineTask task = new UpdateTimelineTask();
+            timeline.clear();
+            task.execute();
+        }
+        else{
+            Toast t = Toast.makeText( this, R.string.fill_required_preferences,Toast.LENGTH_LONG);
+            t.setDuration(1000);
+            t.show();
+            enableRefresh();
+        }
     }
 
     @Override
