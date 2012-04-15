@@ -3,6 +3,8 @@ package pt.isel.pdm.Yamba;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.isel.pdm.Yamba.Model.TwitterStatus;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -62,7 +64,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
         adapter = new TweetAdapter( this, timeline, R.layout.timeline_item, from, to );
         view.setAdapter( adapter );
 
-        if ( isFirstTime ) {
+        if ( isFirstTime && PrefsActivity.checkPreferences(this) ) {
             disableRefresh();
             updateTimeline();
             isFirstTime = false;
@@ -138,7 +140,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
                 Toast.makeText( TimelineActivity.this, exception.getMessage(), Toast.LENGTH_LONG ).show();
             }
             adapter.notifyDataSetChanged();
-            Toast.makeText( TimelineActivity.this, "Fetched : " + timeline.size() + " elements", Toast.LENGTH_LONG )
+            Toast.makeText( TimelineActivity.this, String.format(getString(R.string.fetched_elements), timeline.size()) , Toast.LENGTH_LONG )
                     .show();
             enableRefresh();
         }

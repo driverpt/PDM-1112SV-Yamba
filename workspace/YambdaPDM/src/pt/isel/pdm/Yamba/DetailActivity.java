@@ -4,6 +4,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import pt.isel.pdm.Yamba.Model.TwitterStatus;
+
 import android.util.Log;
 
 import android.widget.TextView;

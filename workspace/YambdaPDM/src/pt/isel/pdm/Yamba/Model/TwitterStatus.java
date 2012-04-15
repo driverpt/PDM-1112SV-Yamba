@@ -1,4 +1,4 @@
-package pt.isel.pdm.Yamba;
+package pt.isel.pdm.Yamba.Model;
 
 import java.util.Date;
 import java.util.TreeMap;
