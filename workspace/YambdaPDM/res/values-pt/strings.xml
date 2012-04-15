@@ -20,6 +20,6 @@
     <string name="detail">Detalhes</string>
     <string name="post_tweet">Postar</string>
     <string name="status">Estado</string>
-    <string name="fill_required_preferences">O Username e Password são obrigatórios</string>
+    <string name="fill_required_preferences">O Username, a Password e o URL são obrigatórios</string>
     <string name="fetched_elements">"Descarregados %s elementos"</string>
 </resources>
