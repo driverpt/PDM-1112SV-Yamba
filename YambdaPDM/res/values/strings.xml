@@ -27,6 +27,6 @@
     <string name="detail">Details</string>
     <string name="post_tweet">Post</string>
     <string name="status">Status</string>
-    <string name="fill_required_preferences">Username and Password are mandatory</string>
+    <string name="fill_required_preferences">Username, Password and URL are mandatory</string>
     <string name="fetched_elements">"Fetched %s elements"</string>
 </resources>

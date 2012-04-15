@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class StatusActivity extends PreferencesEnabledActivity implements OnClickListener {
-    
+
     private static final String TAG = "PDM";
     private Button              submit;
     private EditText            text;
@@ -35,8 +35,16 @@ public class StatusActivity extends PreferencesEnabledActivity implements OnClic
     public void onClick(View v) {
         Log.d(TAG, "onClick");
         disableSubmit();
-        // Update status and enable submit in background
-        new UpdateStatusTask().execute(text.getText().toString());
+
+        if(PrefsActivity.checkPreferences(this)){
+            // Update status and enable submit in background
+            new UpdateStatusTask().execute(text.getText().toString());
+        }
+        else{
+            Toast t = Toast.makeText( this, R.string.fill_required_preferences,Toast.LENGTH_LONG);
+            t.setDuration(1000);
+            t.show();
+        }
     }
 
     // UTILITIES
