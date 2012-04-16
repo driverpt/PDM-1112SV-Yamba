@@ -106,16 +106,16 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
     }
 
     private class UpdateTimelineTask extends AsyncTask< Void, Void, Void > {
+    	YambaPDMApplication app = ( YambaPDMApplication )getApplication();
 
-        private volatile Exception exception;
+    	private volatile Exception exception;
 
         @Override
         protected Void doInBackground( Void ... params ) {
             try {
-                List< Twitter.Status > twitterStatus = ( ( YambaPDMApplication ) getApplication() ).getTwitter()
-                .getUserTimeline();
-
-                SharedPreferences prefs = ( ( YambaPDMApplication ) getApplication() ).getSharedPreferences();
+                List< Twitter.Status > twitterStatus = app.getTwitter().getPublicTimeline();
+                SharedPreferences prefs = app.getSharedPreferences();
+                
                 int max_tweets = Integer.valueOf( prefs.getString( PrefsActivity.KEY_MAX_PRESENTED_TWEETS,
                         String.valueOf( DEFAULT_MAX_TWEETS ) ) );
 
@@ -137,7 +137,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
         @Override
         protected void onPostExecute( Void result ) {
             if ( exception != null ) {
-                Toast.makeText( TimelineActivity.this, exception.getMessage(), Toast.LENGTH_LONG ).show();
+                Toast.makeText( TimelineActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
             }
             adapter.notifyDataSetChanged();
             Toast.makeText( TimelineActivity.this, String.format(getString(R.string.fetched_elements), timeline.size()) , Toast.LENGTH_LONG )
