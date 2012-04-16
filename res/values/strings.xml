@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Yamba PDM</string>
+    <string name="prefs_name">Preferences Yamba</string>
+    <string name="titleYamba">Yamba PDM</string>
+    <string name="titleStatus">Status Update</string>
+    <string name="hintText">Please enter your 140-character status</string>
+    <string name="buttonUpdate">Submit</string>
+    <string name="buttonBusy">Updating</string>
+    <string name="failMessage">Update failed.\nError=%s</string>
+    <string name="terminate">Exit</string>
+    <string name="userTitle">User name</string>
+    <string name="userSum">Name of the user</string>
+    <string name="passTitle">Password</string>
+    <string name="passSum">The password</string>
+    <string name="urlTitle">Url</string>
+    <string name="urlSum">Site base url</string>
+    <string name="prefs">Settings</string>
+    <string name="new_tweet">New Tweet</string>
+    <string name="refresh">Refresh</string>
+    <string name="timeline">Timeline</string>
+    <string name="max_presented_chars">Max Chars</string>
+    <string name="max_presented_chars_sum">Maximum number of characters presented per Tweet</string>
+    <string name="max_presented_tweets">Max Tweets</string>
+    <string name="max_presented_tweets_sum">Maximum number of Tweets shown</string>
+    <string name="detail_message_id">Message Id #%1$s</string>
+    <string name="detail">Details</string>
+    <string name="post_tweet">Post</string>
+    <string name="status">Status</string>
+    <string name="fill_required_preferences">Username, Password and URL are mandatory</string>
+    <string name="fetched_elements">"Fetched %s elements"</string>
+</resources>
