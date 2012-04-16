@@ -26,9 +26,9 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
 
     private static final String   TERMINATOR_SHORT_TEXT_TERMINATOR = "...";
 
-    private static final int      MAX_CHARS_NO_LIMIT               = -1;
+    private static final int      MAX_CHARS_NO_LIMIT               = 140;
 
-    private static final int      DEFAULT_MAX_TWEETS               = -1;
+    private static final int      DEFAULT_MAX_TWEETS               = 50;
 
     private List< TwitterStatus > timeline                         = initTimeline();
     private boolean               isFirstTime                      = true;
@@ -89,6 +89,9 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
                             TERMINATOR_SHORT_TEXT_TERMINATOR );
                     v.setText( newText );
                 }
+                else{
+                    v.setText( text );
+                }
                 break;
             }
             case R.id.date: {
@@ -116,8 +119,10 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
                 List< Twitter.Status > twitterStatus = app.getTwitter().getPublicTimeline();
                 SharedPreferences prefs = app.getSharedPreferences();
                 
-                int max_tweets = Integer.valueOf( prefs.getString( PrefsActivity.KEY_MAX_PRESENTED_TWEETS,
-                        String.valueOf( DEFAULT_MAX_TWEETS ) ) );
+                
+                String tempMaxTweets = prefs.getString(PrefsActivity.KEY_MAX_PRESENTED_TWEETS,
+                        String.valueOf(DEFAULT_MAX_TWEETS));
+                int max_tweets = Integer.valueOf(tempMaxTweets);
 
                 if ( max_tweets != DEFAULT_MAX_TWEETS ) {
                     twitterStatus = twitterStatus.subList( 0, max_tweets );
