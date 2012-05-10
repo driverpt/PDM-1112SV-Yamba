@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Application;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Handler;
@@ -12,9 +13,11 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.widget.Button;
 
+import pt.isel.pdm.yamba.services.TimelineService;
+
 import winterwell.jtwitter.Twitter;
 
-public class YambaPDMApplication extends Application implements OnSharedPreferenceChangeListener {
+public class YambaPDMApplication extends Application implements OnSharedPreferenceChangeListener, Runnable {
     public Button                         lastSubmit;
     public Button                         lastRefresh;
     private Twitter                       twitter;
@@ -73,18 +76,19 @@ public class YambaPDMApplication extends Application implements OnSharedPreferen
             twitter = null;
         }
         if ( key.equals( PrefsActivity.KEY_TIMELINE_REFRESH ) ) {
-            if ( lastTimelineServiceRunnableToken != null ) {
-                handler.removeCallbacks( lastTimelineServiceRunnableToken, lastTimelineServiceRunnableToken );
-            }
-            int newRefreshInterval = Integer.parseInt( sharedPreferences.getString( key, "0" ) );
-            if ( newRefreshInterval != 0 ) {
-                publishRunnableOnTimelineService( lastTimelineServiceRunnableToken );
-            }
+            scheduleTimelineService();
         }
     }
 
+    public void scheduleTimelineService() {
+        if ( lastTimelineServiceRunnableToken != null ) {
+            handler.removeCallbacks( lastTimelineServiceRunnableToken, lastTimelineServiceRunnableToken );
+        }
+        publishRunnableOnTimelineService( this );
+    }
+
     public void publishRunnableOnTimelineService( Runnable runnable ) {
-        int updateInterval = getSharedPreferences().getInt( PrefsActivity.KEY_TIMELINE_REFRESH, 0 );
+        int updateInterval = Integer.parseInt( getSharedPreferences().getString( PrefsActivity.KEY_TIMELINE_REFRESH, "0" ) );
 
         if ( updateInterval == 0 ) {
             return;
@@ -93,7 +97,7 @@ public class YambaPDMApplication extends Application implements OnSharedPreferen
         long uptimeMillis = SystemClock.uptimeMillis();
 
         TimeUnit timeunit = TimeUnit.MILLISECONDS;
-        long delay = timeunit.convert( updateInterval, TimeUnit.MILLISECONDS );
+        long delay = timeunit.convert( updateInterval, TimeUnit.MINUTES );
 
         uptimeMillis += delay;
 
@@ -115,5 +119,11 @@ public class YambaPDMApplication extends Application implements OnSharedPreferen
         String url = prefs.getString( PrefsActivity.KEY_URL, "" );
         twitter = new Twitter( username, password );
         twitter.setAPIRootUrl( url );
+    }
+
+    public void run() {
+        Intent intent = new Intent( this, TimelineService.class );
+        intent.putExtra( TimelineService.OPERATION, TimelineService.MSG_UPDATE_TIMELINE );
+        startService( intent );
     }
 }

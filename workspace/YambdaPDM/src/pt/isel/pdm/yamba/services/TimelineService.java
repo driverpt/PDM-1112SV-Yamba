@@ -12,7 +12,7 @@ import android.widget.Toast;
 import pt.isel.pdm.yamba.YambaPDMApplication;
 import winterwell.jtwitter.Twitter;
 
-public class TimelineService extends IntentService implements Runnable {
+public class TimelineService extends IntentService {
 
     private static final String LOGGER_TAG            = "Timeline Service";
 
@@ -24,10 +24,7 @@ public class TimelineService extends IntentService implements Runnable {
     public static final int     INVALID_OPERATION     = -1;
     public static final String  OPERATION             = "Timeline Operation";
 
-    private static final String SCHEDULED_START       = "Timeline Scheduled Start";
-
     private Handler             mainThreadHandler;
-    private Handler             localHandler;
 
     public TimelineService() {
         super( "TimelineService" );
@@ -65,9 +62,7 @@ public class TimelineService extends IntentService implements Runnable {
             }
         }
 
-        if( intent.getBooleanExtra( SCHEDULED_START, false ) ) {
-            app.publishRunnableOnTimelineService( this );
-        }
+        app.scheduleTimelineService();
     }
 
     @Override
@@ -79,12 +74,5 @@ public class TimelineService extends IntentService implements Runnable {
     @Override
     public IBinder onBind( Intent intent ) {
         return null;
-    }
-
-    public void run() {
-        Intent intent = new Intent( this, TimelineService.class );
-        intent.putExtra( TimelineService.OPERATION, TimelineService.MSG_UPDATE_TIMELINE );
-        intent.putExtra( TimelineService.SCHEDULED_START, true );
-        startService( intent );
     }
 }
