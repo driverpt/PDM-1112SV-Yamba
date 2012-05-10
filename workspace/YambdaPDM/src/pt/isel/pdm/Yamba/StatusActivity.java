@@ -1,5 +1,6 @@
-package pt.isel.pdm.Yamba;
+package pt.isel.pdm.yamba;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +9,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import pt.isel.pdm.yamba.services.StatusPublishingService;
 
 public class StatusActivity extends PreferencesEnabledActivity implements OnClickListener {
 
@@ -34,48 +37,11 @@ public class StatusActivity extends PreferencesEnabledActivity implements OnClic
     /** Called by submit button */
     public void onClick(View v) {
         Log.d(TAG, "onClick");
-        disableSubmit();
-
-        if(PrefsActivity.checkPreferences(this)){
-            // Update status and enable submit in background
-            new UpdateStatusTask().execute(text.getText().toString());
-        }
-        else{
-            Toast t = Toast.makeText( this, R.string.fill_required_preferences,Toast.LENGTH_LONG);
-            t.setDuration(1000);
-            t.show();
-        }
+        Intent intent = new Intent(this, StatusPublishingService.class);
+        intent.putExtra( StatusPublishingService.TWEET_MSG, text.getText().toString() );
+        startService( intent );
     }
 
-    // UTILITIES
-
-    /** Task to update Status and enable submit button (in background) */
-    private class UpdateStatusTask extends AsyncTask<String, Void, Void> {
-        private static final long  TOTAL_TM = 5000; // Elapsed time.
-        private volatile Exception error    = null;
-
-        protected Void doInBackground(String... params) {
-            try {
-                long startTm = System.currentTimeMillis();
-                YambaPDMApplication yamba = ( YambaPDMApplication ) getApplication();
-                yamba.getTwitter().updateStatus(params[0]);
-                long elapsedTm = System.currentTimeMillis() - startTm;
-                if (elapsedTm < TOTAL_TM) // Provides a minimum duration
-                    Thread.sleep(TOTAL_TM - elapsedTm);
-                Log.d(TAG, "Submited. Elapsed time=" + elapsedTm + ", text=" + params[0]);
-            } catch (Exception ex) {
-                error = ex;
-            }
-            return null;
-        }
-
-        protected void onPostExecute(Void res) {
-            Log.d(TAG, "onPostExecute");
-            if (error != null)
-                showToast(getString(R.string.failMessage, error));
-            enableSubmit();
-        }
-    }
 
     /** Displays a Toast with long length duration */
     private void showToast(String txt) {

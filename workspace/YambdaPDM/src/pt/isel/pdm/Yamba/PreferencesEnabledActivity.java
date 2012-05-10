@@ -1,4 +1,4 @@
-package pt.isel.pdm.Yamba;
+package pt.isel.pdm.yamba;
 
 import android.app.Activity;
 import android.content.Intent;

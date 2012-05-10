@@ -28,5 +28,9 @@
     <string name="post_tweet">Post</string>
     <string name="status">Status</string>
     <string name="fill_required_preferences">Username, Password and URL are mandatory</string>
-    <string name="fetched_elements">"Fetched %s elements"</string>
+    <string name="fetched_elements">Fetched %s elements</string>
+    <string name="no_pref_available">None</string>
+    <string name="timeline_refresh_interval">Timeline Refresh Interval</string>
+    <string name="timeline_refresh_interval_sum">The timespan between automatic updates to the timeline</string>
+    <string name="timeline_refresh_interval_sum_filled">The timeline refreshes every %d minutes</string>
 </resources>
