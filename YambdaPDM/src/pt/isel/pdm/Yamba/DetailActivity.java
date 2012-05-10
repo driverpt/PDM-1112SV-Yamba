@@ -1,18 +1,16 @@
-package pt.isel.pdm.Yamba;
+package pt.isel.pdm.yamba;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import pt.isel.pdm.Yamba.Model.TwitterStatus;
-
-import android.util.Log;
-
-import android.widget.TextView;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.TextView;
+
+import pt.isel.pdm.yamba.model.TwitterStatus;
 
 public class DetailActivity extends Activity {
 

@@ -14,8 +14,14 @@
         android:title="@string/max_presented_chars" 
         android:summary="@string/max_presented_chars_sum" 
         android:numeric="integer"/>
+    
     <EditTextPreference android:key="max_tweets" 
         android:title="@string/max_presented_tweets" 
         android:summary="@string/max_presented_tweets_sum"
+        android:numeric="integer"/>
+    
+    <EditTextPreference android:key="timeline_refresh_interval" 
+        android:title="@string/timeline_refresh_interval" 
+        android:summary="@string/timeline_refresh_interval_sum"
         android:numeric="integer"/>
 </PreferenceScreen>
