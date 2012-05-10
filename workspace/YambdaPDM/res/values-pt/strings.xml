@@ -23,4 +23,5 @@
     <string name="fill_required_preferences">O Username, a Password e o URL são obrigatórios</string>
     <string name="fetched_elements">"Descarregados %s elementos"</string>
     <string name="menu_userinfo">Informação Utilizador</string>
+    <string name="act_userinfo_title">Informção de Utilizador</string>
 </resources>
