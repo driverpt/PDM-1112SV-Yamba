@@ -22,4 +22,5 @@
     <string name="status">Estado</string>
     <string name="fill_required_preferences">O Username, a Password e o URL são obrigatórios</string>
     <string name="fetched_elements">"Descarregados %s elementos"</string>
+    <string name="menu_userinfo">Informação Utilizador</string>
 </resources>
