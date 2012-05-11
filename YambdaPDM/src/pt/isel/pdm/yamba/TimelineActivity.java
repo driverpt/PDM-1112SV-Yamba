@@ -66,6 +66,11 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
         view.setAdapter( adapter );
         
         app.setOnYambaTimelineChangeListener( this );
+        
+        if( isFirstTime ) {
+            updateTimeline();
+            isFirstTime = false;
+        }
     }
 
     private class TweetAdapter extends SimpleAdapter {

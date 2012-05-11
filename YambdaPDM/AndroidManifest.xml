@@ -29,11 +29,19 @@
             android:name=".DetailActivity" 
             android:label="@string/detail"
             android:launchMode="singleTop" />
+        <activity 
+            android:name=".UserInfoActivity" 
+            android:label="@string/act_userinfo_title"
+            android:launchMode="singleTop" />        
         <service 
             android:name=".services.StatusPublishingService"
             />
         <service
             android:name=".services.TimelineService"
-            />           
+            />
+        <service
+            android:name=".services.UserInfoService"
+            android:process="pt.isel.pdm.yamba.UserInfoService"
+            />
     </application>
 </manifest>
