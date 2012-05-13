@@ -10,13 +10,16 @@ public class TwitterStatus extends TreeMap< String, Object > {
     public static final String KEY_TIMESTAMP = "pdm_timestamp";
     public static final String KEY_USER      = "pdm_user";
     public static final String KEY_TWEET     = "pdm_tweet";
+    public static final String KEY_PHOTO_URI = "pdm_photoUri";
 
-    public TwitterStatus( long id, String user, Date date, String tweet ) {
+    public TwitterStatus( long id, String user, Date date, String tweet ,String pictureUri) {
         put( KEY_ID, id );
         put( KEY_DATE, date );
         put( KEY_USER, user );
         put( KEY_TWEET, tweet );
         put( KEY_TIMESTAMP, date.getTime() );
+        if (pictureUri != null)
+            put( KEY_PHOTO_URI, pictureUri );
     }
 
     public long getId() {

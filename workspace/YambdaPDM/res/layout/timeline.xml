@@ -2,33 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#CCCCCC"
     android:orientation="vertical"
-    android:background="#EEEEEE" 
-    android:padding="2.5pt"
-    >
+    android:padding="5dip" >
+
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="0pt"
-        android:layout_weight="0.91" 
-        android:headerDividersEnabled="true"
-        android:footerDividersEnabled="true"
-        android:background="#CCCCCC"
-        android:paddingTop="5pt"
-        android:padding="5pt"
-        
-        >
-        
+        android:layout_weight="0.91"
+        android:background="@drawable/customshape"
+        android:padding="5dip" >
     </ListView>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical" >
+
         <Button
             android:id="@+id/refreshButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/refresh" />
     </LinearLayout>
+
 </LinearLayout>
