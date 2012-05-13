@@ -24,4 +24,7 @@
     <string name="fetched_elements">"Descarregados %s elementos"</string>
     <string name="menu_userinfo">Informação Utilizador</string>
     <string name="act_userinfo_title">Informção de Utilizador</string>
+	<string name="act_userinfo_pd_title">PERLÁ1BCD!</string>
+    <string name="act_userinfo_pd_text">A carregar informação do utilizador</string>
+
 </resources>

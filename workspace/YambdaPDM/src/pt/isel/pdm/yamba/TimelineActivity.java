@@ -81,12 +81,6 @@ OnYambaTimelineChangeListener {
     }
 
     private class TweetAdapter extends SimpleAdapter {
-
-
-
-
-
-
         public TweetAdapter( Context context, List< TwitterStatus > data, int resource, String[] from, int[] to ) {
             super( context, data, resource, from, to );
         }
