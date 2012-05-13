@@ -20,43 +20,115 @@
             android:padding="1dip" >
 
             <ImageView
-                android:id="@+id/photoUri"
+                android:id="@+id/tweetDetailUserImage"
                 android:layout_width="100dip"
                 android:layout_height="100dip"
                 android:src="@drawable/ic_launcher" />
 
-            <TextView
-                android:id="@+id/userTextView"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:gravity="center_vertical"
-                android:textColor="#000000"
-                android:textSize="8pt"
-                android:textStyle="bold" />
-            <TextView
-                android:id="@+id/userFollowers"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:gravity="center_vertical"
-                android:textColor="#000000"
-                android:textSize="8pt"
-                android:textStyle="bold" />
-            <TextView
-                android:id="@+id/userFollows"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:gravity="center_vertical"
-                android:textColor="#000000"
-                android:textSize="8pt"
-                android:textStyle="bold" />
-            <TextView
-                android:id="@+id/userTweetsCount"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:gravity="center_vertical"
-                android:textColor="#000000"
-                android:textSize="8pt"
-                android:textStyle="bold" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="1dip" >
+
+                <TextView
+                    android:id="@+id/userTextView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:textColor="#000000"
+                    android:textSize="8pt"
+                    android:textStyle="bold" 
+                    android:paddingTop="10dip"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="10dip"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="1dip" 
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:id="@+id/friendsViewDescription"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:gravity="center_horizontal|center_vertical"
+                            android:text="@string/friendsDescription"
+                            android:textColor="#000000"
+                            android:textSize="6pt"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/friendsView"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:gravity="center_horizontal|center_vertical"
+                            android:textColor="#000000"
+                            android:textSize="5pt"
+                            android:text="ASDSAD" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="1dip" 
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:id="@+id/followersViewDescription"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:gravity="center_horizontal|center_vertical"
+                            android:text="@string/followersDescription"
+                            android:textColor="#000000"
+                            android:textSize="6pt"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/followersView"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:gravity="center_horizontal|center_vertical"
+                            android:textColor="#000000"
+                            android:textSize="5pt" 
+                            android:text="ASDSAD"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="1dip" 
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:id="@+id/postsViewDescription"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:gravity="center_horizontal|center_vertical"
+                            android:text="@string/postsCountDescription"
+                            android:textColor="#000000"
+                            android:textSize="6pt"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/postsView"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:gravity="center_horizontal|center_vertical"
+                            android:textColor="#000000"
+                            android:textSize="5pt" 
+                            android:text="ASDSAD"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
 
         <ImageView
@@ -105,8 +177,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="0.24"
-            android:textColor="#3F92D2" 
-            android:padding="3dip"/>
+            android:padding="3dip"
+            android:textColor="#3F92D2" />
     </LinearLayout>
 
 </LinearLayout>

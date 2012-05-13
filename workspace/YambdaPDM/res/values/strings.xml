@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">Yamba PDM</string>
     <string name="prefs_name">Preferences Yamba</string>
     <string name="titleYamba">Yamba PDM</string>
@@ -37,5 +38,8 @@
     <string name="act_userinfo_title">My information</string>
     <string name="act_userinfo_pd_title">W8TABIT!</string>
     <string name="act_userinfo_pd_text">Loading user information. Please wait.</string>
-    
+    <string name="friendsDescription">Friends</string>
+    <string name="followersDescription">Followers</string>
+    <string name="postsCountDescription">Posts</string>
+
 </resources>
