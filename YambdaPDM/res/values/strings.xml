@@ -35,4 +35,7 @@
     <string name="timeline_refresh_interval_sum_filled">The timeline refreshes every %d minutes</string>
     <string name="menu_userinfo">User Information</string>
     <string name="act_userinfo_title">My information</string>
+    <string name="act_userinfo_pd_title">W8TABIT!</string>
+    <string name="act_userinfo_pd_text">Loading user information. Please wait.</string>
+    
 </resources>
