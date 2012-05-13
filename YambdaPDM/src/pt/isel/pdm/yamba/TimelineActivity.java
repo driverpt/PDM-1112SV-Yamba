@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import pt.isel.pdm.yamba.model.TwitterStatus;
 import pt.isel.pdm.yamba.services.TimelineService;
@@ -26,9 +27,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
         OnYambaTimelineChangeListener {
 
     private static final String   TERMINATOR_SHORT_TEXT_TERMINATOR = "...";
-
     private static final int      MAX_CHARS_NO_LIMIT               = 140;
-
     private static final int      DEFAULT_MAX_TWEETS               = 50;
 
     private List< TwitterStatus > timeline                         = initTimeline();
@@ -52,7 +51,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
 
         refreshButton = (Button) findViewById( R.id.refreshButton );
         refreshButton.setOnClickListener( this );
-
+        
         YambaPDMApplication app = (YambaPDMApplication) getApplication();
         if ( app.lastRefresh != null && !app.lastRefresh.isEnabled() ) {
             disableRefresh();
@@ -140,26 +139,27 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
         Intent intent = new Intent( this, DetailActivity.class );
         intent.addFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
 
-        intent.putExtra( TwitterStatus.KEY_TWEET, timeline.get( position ).getTweet() );
-        intent.putExtra( TwitterStatus.KEY_DATE, timeline.get( position ).getDate() );
-        intent.putExtra( TwitterStatus.KEY_USER, timeline.get( position ).getUser() );
-        intent.putExtra( TwitterStatus.KEY_ID, timeline.get( position ).getId() );
-
-        startActivity( intent );
+        TwitterStatus status = timeline.get(position);
+        if (status != null)
+        {
+	        intent.putExtra( TwitterStatus.KEY_TWEET, status.getTweet() );
+	        intent.putExtra( TwitterStatus.KEY_DATE,  status.getDate() );
+	        intent.putExtra( TwitterStatus.KEY_USER,  status.getUser() );
+	        intent.putExtra( TwitterStatus.KEY_ID,    status.getId() );
+	        startActivity(intent);
+	    }
     }
 
     public void onYambaTimelineChange() {
         YambaPDMApplication app = (YambaPDMApplication) getApplication();
-        final List< Twitter.Status > currentTimeline = app.getCurrentTimeline();
-        final List< TwitterStatus > adapterTimeline = new LinkedList< TwitterStatus >();
-
+        List< Twitter.Status > currentTimeline = app.getCurrentTimeline();
+        
         for ( Twitter.Status status : currentTimeline ) {
             TwitterStatus temp = new TwitterStatus( status.getId(), status.getUser().getName(), status.getCreatedAt(),
-                    status.getText() );
-            timeline.add( temp );
+                    status.getText());
+            timeline.add(temp);
         }
 
-        timeline = adapterTimeline;
         adapter.notifyDataSetChanged();
     }
 }
