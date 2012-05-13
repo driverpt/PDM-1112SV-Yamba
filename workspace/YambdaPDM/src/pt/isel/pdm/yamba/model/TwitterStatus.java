@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Date;
 import java.util.TreeMap;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 
 @SuppressWarnings( "serial" )
