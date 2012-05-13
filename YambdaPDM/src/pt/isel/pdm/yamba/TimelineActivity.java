@@ -152,11 +152,15 @@ OnYambaTimelineChangeListener {
         TwitterStatus status = timeline.get(position);
         if (status != null)
         {
-            intent.putExtra( TwitterStatus.KEY_TWEET,     status.getTweet() );
-            intent.putExtra( TwitterStatus.KEY_DATE,      status.getDate() );
-            intent.putExtra( TwitterStatus.KEY_USER,      status.getUser() );
-            intent.putExtra( TwitterStatus.KEY_ID,        status.getId() );
-            intent.putExtra( TwitterStatus.KEY_PHOTO_URI, status.getPhotoUri() );
+            intent.putExtra( TwitterStatus.KEY_TWEET,           status.getTweet() );
+            intent.putExtra( TwitterStatus.KEY_DATE,            status.getDate() );
+            intent.putExtra( TwitterStatus.KEY_USER,            status.getUser() );
+            intent.putExtra( TwitterStatus.KEY_ID,              status.getId() );
+            intent.putExtra( TwitterStatus.KEY_PHOTO_URI,       status.getPhotoUri() );
+            intent.putExtra( TwitterStatus.KEY_FOLLOWERS_COUNT, status.getFollowersCount() );
+            intent.putExtra( TwitterStatus.KEY_FRIENDS_COUNT,   status.getFriendsCount() );
+            intent.putExtra( TwitterStatus.KEY_POSTS_COUNT,     status.getPostsCount() );
+            
             startActivity(intent);
         }
     }
@@ -168,8 +172,17 @@ OnYambaTimelineChangeListener {
         Hashtable<String,Bitmap> bmTable = new Hashtable<String, Bitmap>();
 
         for ( Twitter.Status status : currentTimeline ) {            
-            TwitterStatus temp = new TwitterStatus( status.getId(), status.getUser().getName(), status.getCreatedAt(),
-                    status.getText(), status.getUser().getProfileImageUrl());
+            TwitterStatus temp = new TwitterStatus( 
+                    status.getId(), 
+                    status.getUser().
+                    getName(), 
+                    status.getCreatedAt(),
+                    status.getText(), 
+                    status.getUser().getProfileImageUrl(),
+                    status.getUser().getFriendsCount(),
+                    status.getUser().getFollowersCount(),
+                    status.getUser().getStatusesCount()
+                    );
             timeline.add(temp);
         }
 
