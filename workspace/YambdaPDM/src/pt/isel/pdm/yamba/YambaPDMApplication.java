@@ -13,6 +13,7 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.widget.Button;
 
+import pt.isel.pdm.yamba.model.TwitterStatus;
 import pt.isel.pdm.yamba.services.TimelineService;
 
 import winterwell.jtwitter.Twitter;
@@ -126,4 +127,8 @@ public class YambaPDMApplication extends Application implements OnSharedPreferen
         intent.putExtra( TimelineService.OPERATION, TimelineService.MSG_UPDATE_TIMELINE );
         startService( intent );
     }
+
+	public List<Twitter.Status> getTimeline() {
+		return timeline;
+	}
 }
