@@ -5,6 +5,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -67,8 +69,8 @@ OnYambaTimelineChangeListener {
 
         app.lastRefresh = refreshButton;
 
-        String[] from = { TwitterStatus.KEY_USER, TwitterStatus.KEY_TIMESTAMP, TwitterStatus.KEY_TWEET ,TwitterStatus.KEY_PHOTO_URI};
-        int[] to = { R.id.user, R.id.date, R.id.tweet ,R.id.photoUri};
+        String[] from = { TwitterStatus.KEY_USER, TwitterStatus.KEY_TIMESTAMP, TwitterStatus.KEY_TWEET };
+        int[] to = { R.id.user, R.id.date, R.id.tweet};
         adapter = new TweetAdapter( this, timeline, R.layout.timeline_item, from, to );
         view.setAdapter( adapter );
 
@@ -81,31 +83,10 @@ OnYambaTimelineChangeListener {
     }
 
     private class TweetAdapter extends SimpleAdapter {
+
         public TweetAdapter( Context context, List< TwitterStatus > data, int resource, String[] from, int[] to ) {
             super( context, data, resource, from, to );
         }
-
-
-        @Override
-        public void setViewImage(ImageView v, String value) {
-            if(value!=null && !value.isEmpty()){
-                URI uri = URI.create(value);
-                Bitmap imageBitmap;
-                try {
-                    imageBitmap = BitmapFactory.decodeStream( uri.toURL().openStream() );
-                    v.setImageBitmap( imageBitmap );
-                } catch (MalformedURLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                
-            }
-        }
-
-
 
         @Override
         public void setViewText( TextView v, String text ) {
@@ -184,7 +165,9 @@ OnYambaTimelineChangeListener {
         YambaPDMApplication app = (YambaPDMApplication) getApplication();
         List< Twitter.Status > currentTimeline = app.getCurrentTimeline();
 
-        for ( Twitter.Status status : currentTimeline ) {
+        Hashtable<String,Bitmap> bmTable = new Hashtable<String, Bitmap>();
+
+        for ( Twitter.Status status : currentTimeline ) {            
             TwitterStatus temp = new TwitterStatus( status.getId(), status.getUser().getName(), status.getCreatedAt(),
                     status.getText(), status.getUser().getProfileImageUrl());
             timeline.add(temp);
