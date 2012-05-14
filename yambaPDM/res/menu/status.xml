@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:id="@+id/timeline"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="@string/timeline">
+    </item>
+    <item
+        android:id="@+id/status"
+        android:icon="@android:drawable/sym_action_chat"
+        android:title="@string/status">
+    </item>
+    <item
+        android:id="@+id/prefs"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="@string/prefs">
+    </item>
+    <item
+        android:id="@+id/terminate"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:title="@string/terminate">
+    </item>
+    <item android:id="@+id/userinfo" android:title="@string/menu_userinfo" android:icon="@android:drawable/ic_menu_info_details"></item>
+
+</menu>

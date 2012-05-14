@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="prefs_name">Preferências Yamba</string>
+    <string name="titleStatus">Actualização de estado</string>
+    <string name="hintText">Por favor, indique o seu estado (Máximo: 140 caracteres)</string>
+    <string name="buttonUpdate">Submeter</string>
+    <string name="buttonBusy">A actualizar</string>
+    <string name="failMessage">A actualização falhou.\nErro=%s</string>
+    <string name="terminate">Sair</string>
+    <string name="userSum">O nome de utilizador</string>
+    <string name="passSum">A palavra passe</string>
+    <string name="urlSum">URL do site</string>
+    <string name="prefs">Definições</string>
+    <string name="new_tweet">Novo Tweet</string>
+    <string name="refresh">Actualizar</string>
+    <string name="timeline">Linha temporal</string>
+    <string name="max_presented_chars">Max Caracteres</string>
+    <string name="max_presented_chars_sum">Número máximo de caracteres apresentados por tweet</string>
+    <string name="max_presented_tweets_sum">Número máximo de Tweets exibidos</string>
+    <string name="detail">Detalhes</string>
+    <string name="post_tweet">Postar</string>
+    <string name="status">Estado</string>
+    <string name="fill_required_preferences">O Username, a Password e o URL são obrigatórios</string>
+    <string name="fetched_elements">"Descarregados %s elementos"</string>
+    <string name="menu_userinfo">Informação Utilizador</string>
+    <string name="act_userinfo_title">Informção de Utilizador</string>
+	<string name="act_userinfo_pd_title">PERLÁ1BCD!</string>
+    <string name="act_userinfo_pd_text">A carregar informação do utilizador</string>
+
+</resources>

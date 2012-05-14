@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <EditTextPreference android:key="user" 
+        android:title="@string/userTitle"
+        android:defaultValue="avdpdm" 
+        android:summary="@string/userSum"/>
+    <EditTextPreference android:key="pass" 
+        android:title="@string/passTitle" 
+        android:summary="@string/passSum"
+        android:defaultValue="123456"
+        android:password="true"/>
+    <EditTextPreference android:key="url" 
+        android:title="@string/urlTitle" 
+        android:summary="@string/urlSum"
+        android:defaultValue="http://yamba.marakana.com/api"/>
+    <EditTextPreference android:key="max_chars" 
+        android:title="@string/max_presented_chars" 
+        android:summary="@string/max_presented_chars_sum" 
+        android:numeric="integer"/>
+    
+    <EditTextPreference android:key="max_tweets" 
+        android:title="@string/max_presented_tweets" 
+        android:summary="@string/max_presented_tweets_sum"
+        android:numeric="integer"/>
+    
+    <EditTextPreference android:key="timeline_refresh_interval" 
+        android:title="@string/timeline_refresh_interval" 
+        android:summary="@string/timeline_refresh_interval_sum"
+        android:numeric="integer"/>
+</PreferenceScreen>
