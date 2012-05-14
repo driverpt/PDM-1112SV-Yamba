@@ -1,0 +1,30 @@
+Para introduzir os novos conceitos leccionados após a etapa 1 desenvolve-
+
+Como abordagem à Programação para Dispositivos Móveis tem-se como projecto inicial o desenvolvimento de uma aplicação baseada na rede social \textit{Twitter}\footnote{ https://twitter.com/}, \textit{Yamba}\footnote{http://yamba.marakana.com/}.
+				
+Esta fase inicial da implementação tem por objectivo consolidar os conhecimentos adquiridos sobre a matéria leccionada no início das aulas, destancando-se os seguintes tópicos:
+					\begin{itemize}  
+					%\setlength{\itemsep}{0pt}
+					%\setlength{\parskip}{0pt}
+						\item Internacionalização da aplicação;
+						\item Conceito de \textit{Activity}, através do desenvolvimento de quatro componentes deste tipo (\textit{Status, Preferences, Timeline} e \textit{Detail});
+						\item Execução Assíncrona em \textit{Android};
+						\item Opções, Menus e preferências;
+						\item \textit{Tasks} e modos de lançamento das mesmas.
+					\end{itemize}
+		
+		\section{Internacionalização da aplicação}
+		A internacionalização da aplicação é efectuada com base nos recursos da aplicação, nomeadamente no ficheiro \textit{strings.xml}. Para permitir que a aplicação esteja traduzida para Português é criado um directório \textit{res/values-pt/strings.xml} que permite à plataforma utilizar estes valores para \textit{strings} consoante a língua configurada. O valor por omissão reside em \textit{res/values/strings.xml}.
+		
+		%\subsection{\textit{Status, Preferences, Timeline} e \textit{Detail}}
+		
+		\section{Execução Assíncrona}
+		A utilização de mecanismos de execução assíncrona é obrigatória para o desenvolvimento de uma boa experiência de utilizador. No desenvolvimento da Etapa 1 são efectuadas duas operações com recurso a este mecanismo: 
+		\begin{itemize} 
+			\item Actualização do estado no Yamba; 
+			\item Leitura dos vários estados dos utilizadores do Yamba.
+		\end{itemize}
+		
+		Para esta implementação é declarada a classe privada \textit{UpdateStatusTask} na classe \textit{StatusActivity} e a classe privada \textit{UpdateTimelineTask}. Ambas extendem a classe \textit{AsyncTask} disponibilizada pelo \textit{Android}.
+		
+		É feito o \textit{override} dos métodos \textit{doInBackground} e \textit{onPostExecute}. O primeiro é invocado pela \textit{thread} da interface gráfica e executa uma tarefa em segundo plano garantindo que a aplicação continua a "responder". O segundo método é invocado quando pelo primeiro aquando do fim da execução do código.
