@@ -54,7 +54,6 @@ public class YambaPDMApplication extends Application implements OnSharedPreferen
     }
 
     // Synchronized is needed to avoid concurrency issues
-    // Somehow i dont like Synchronized, a monitor would be better
     public synchronized void setTimeline( List< Twitter.Status > newTimeline ) {
         timeline = newTimeline;
         if ( timelineChangedListener != null ) {

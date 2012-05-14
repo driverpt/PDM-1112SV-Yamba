@@ -2,6 +2,8 @@
 \label{sec:timelinePull}
 
 O Serviço \texttt{TimelinePull} segue a mesma implementação do serviço \texttt{StatusUpload} (em \ref{sec:statusUpload}).
-
-A diferença na implementação deste serviço deve-se que no \texttt{onHandleIntent()}, o serviço obtém uma referência para a aplicação para que no fim do processamento este possa entregar a lista de tweets que foi recolhida.
+\vspace{1em}
+A diferença na implementação deste serviço deve-se que no \texttt{onHandleIntent()}, o serviço obtém uma referência para a aplicação para que no fim do processamento este possa entregar a lista de tweets que foi recolhida através do método \texttt{setTimeline(List<Twitter.Status>)}. 
+\vspace{1em}
+Na YambaPDMApplication, o método \texttt{setTimeline(List<Twitter.Status>)} invoca o método \texttt{notifyOnYambaTimelineChangeListener()} que obtém o \texttt{Lopper.getMainLooper()}, constroi um \texttt{Handler} e actualiza a \textit{User Interface}.
 

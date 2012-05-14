@@ -16,6 +16,7 @@ Para implementar estes serviços, do tipo \textit{Started Service} foi necessário
 
 Um \texttt{IntentService} permite criar um \textit{Started Service} que já é um \texttt{Runnable}, ou seja, o código já é executado assincronamente e o programador não tem que se preocupar com aspectos de implementação/execução de uma classe do tipo \texttt{Runnable}.
 
+
 Como tal, ao implementar um serviço que estenda de \texttt{IntentService} deve de se ter em conta os seguintes aspectos:
 \begin{itemize}
 	\item Cada \texttt{Intent} recebido em \texttt{onStartCommand()} é colocado numa fila
