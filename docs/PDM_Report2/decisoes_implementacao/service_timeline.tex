@@ -1,2 +1,7 @@
 \section{\texttt{TimelinePull}}
 \label{sec:timelinePull}
+
+O Serviço \texttt{TimelinePull} segue a mesma implementação do serviço \texttt{StatusUpload} (em \ref{sec:statusUpload}).
+
+A diferença na implementação deste serviço deve-se que no \texttt{onHandleIntent()}, o serviço obtém uma referência para a aplicação para que no fim do processamento este possa entregar a lista de tweets que foi recolhida.
+

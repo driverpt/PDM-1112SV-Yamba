@@ -2,3 +2,8 @@
 \label{sec:statusUpload}
 Na implementação deste serviço, tal como descrito em \ref{sec:intent}, opta-se por estender de \texttt{IntentService}.
 
+Na implementação deste serviço, quando é chamado o o método \texttt{onCreate()} é guardada uma referencia para a classe \texttt{Twitter}. Esta classe vai ser utilizada posteriormente pelo método \texttt{onHandleIntent()} para efectuar a publicação de Tweets.
+
+Quando o método \texttt{onHandleIntent()} é invocado, é então realizado o processamento associado ao \textit{post} de um novo \textit{tweet}. Como este processamento é realizado no método \texttt{onHandleIntent()}, a sua execução não irá interferir com a \textbf{UI Thread}, garantindo assim que a interface gráfica não bloqueia e que a execução da aplicação é fluida.
+
+
