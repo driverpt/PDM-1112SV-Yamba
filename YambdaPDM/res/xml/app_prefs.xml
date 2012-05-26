@@ -27,4 +27,7 @@
         android:title="@string/timeline_refresh_interval" 
         android:summary="@string/timeline_refresh_interval_sum"
         android:numeric="integer"/>
+    <CheckBoxPreference android:key="auto_timeline_update" 
+        android:title="@string/auto_timeline_update"
+        android:summary="@string/auto_timeline_update_sum"/>
 </PreferenceScreen>
