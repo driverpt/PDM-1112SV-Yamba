@@ -1,5 +1,8 @@
 package pt.isel.pdm.yamba.provider;
 
+import pt.isel.pdm.yamba.provider.contract.TweetContract;
+import pt.isel.pdm.yamba.provider.contract.UserContract;
+import pt.isel.pdm.yamba.provider.helper.TwitterHelper;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentUris;
