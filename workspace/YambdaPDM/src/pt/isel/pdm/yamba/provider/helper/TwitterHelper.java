@@ -1,5 +1,7 @@
-package pt.isel.pdm.yamba.provider;
+package pt.isel.pdm.yamba.provider.helper;
 
+import pt.isel.pdm.yamba.provider.contract.TweetContract;
+import pt.isel.pdm.yamba.provider.contract.UserContract;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;

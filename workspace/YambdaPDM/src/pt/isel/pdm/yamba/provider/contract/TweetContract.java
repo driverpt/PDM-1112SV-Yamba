@@ -1,5 +1,6 @@
-package pt.isel.pdm.yamba.provider;
+package pt.isel.pdm.yamba.provider.contract;
 
+import pt.isel.pdm.yamba.provider.TwitterProvider;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
