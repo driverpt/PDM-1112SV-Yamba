@@ -43,5 +43,7 @@
             android:name=".services.UserInfoService"
             android:process="pt.isel.pdm.yamba.UserInfoService"
             />
+        
+        <provider android:name=".TwitterProvider" android:authorities="pt.isel.pdm.yamba.providers">></provider>
     </application>
 </manifest>
