@@ -20,15 +20,19 @@ public class TwitterProvider  extends ContentProvider{
 
     private static final int TWITTER_ALL = 1;
     private static final int TWITTER_ID = 2;
-    
+    private static final int USER_ALL = 3;
+    private static final int USER_ID = 4;
+
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     static {
-        uriMatcher.addURI(AUTHORITY, "UC", TWITTER_ALL);
-        uriMatcher.addURI(AUTHORITY, "UC/#", TWITTER_ID);
+        uriMatcher.addURI(AUTHORITY, "TWEET", TWITTER_ALL);
+        uriMatcher.addURI(AUTHORITY, "TWEET/#", TWITTER_ID);
+        uriMatcher.addURI(AUTHORITY, "USER", USER_ID);
+        uriMatcher.addURI(AUTHORITY, "USER/#", USER_ID);
     }
     @Override
     public boolean onCreate() {
-        Log.v("PDM","LeicProvider: onCreate()");
+        Log.v("PDM","TwitterProvider: onCreate()");
         thp = new TwitterHelper(getContext());
         return true;
     }
@@ -38,37 +42,22 @@ public class TwitterProvider  extends ContentProvider{
             String[] selectionArgs, String sortOrder) {
         selection = makeSelection(uri, selection);
         SQLiteDatabase db = thp.getReadableDatabase();
-        return db.query(TwitterTweetsContract.TABLE, projection, selection, selectionArgs, null, null, sortOrder);
+        return db.query(TweetContract.TABLE, projection, selection, selectionArgs, null, null, sortOrder);
     }
 
     private String makeSelection(Uri uri, String sel) {
         switch (uriMatcher.match(uri)) {
-        case TWITTER_ID:    return TwitterTweetsContract._ID + "=" + uri.getLastPathSegment();
-        default:            return sel;
+        case TWITTER_ID: return TweetContract._ID + "=" + uri.getLastPathSegment();
+        case USER_ID:    return UserContract._ID + "=" + uri.getLastPathSegment();
+        default:         return sel;
         }
-    }
-
-    @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
-        SQLiteDatabase db = thp.getWritableDatabase();
-        try {
-            selection = makeSelection(uri, selection);
-            return db.delete(TwitterTweetsContract.TABLE, selection, selectionArgs);
-        } finally { db.close(); }
-    }
-
-    private static final String MIME_TWEETS_ALL = "vnd.android.cursor.dir/vnd.isel.pdm.Tweet";
-    private static final String MIME_TWEETS_ONE = "vnd.android.cursor.item/vnd.isel.pdm.Tweet";
-    @Override
-    public String getType(Uri uri) {
-        return uriMatcher.match(uri)==TWITTER_ALL ? MIME_TWEETS_ALL : MIME_TWEETS_ONE;
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         SQLiteDatabase db = thp.getWritableDatabase();
         try {
-            long row = db.insert(TwitterTweetsContract.TABLE, null, values);
+            long row = db.insert(TweetContract.TABLE, null, values);
             return (row==-1) ? null : ContentUris.withAppendedId(uri, row);
         } finally { db.close(); }
     }
@@ -79,8 +68,42 @@ public class TwitterProvider  extends ContentProvider{
         SQLiteDatabase db = thp.getWritableDatabase();
         try {
             selection = makeSelection(uri, selection);
-            return db.update(TwitterTweetsContract.TABLE, values, selection, selectionArgs);
+            return db.update(TweetContract.TABLE, values, selection, selectionArgs);
         } finally { db.close(); }
     }
 
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        SQLiteDatabase db = thp.getWritableDatabase();
+        try {
+            selection = makeSelection(uri, selection);
+            return db.delete(TweetContract.TABLE, selection, selectionArgs);
+        } finally { db.close(); }
+    }
+
+    private static final String MIME_BASE_DIR = "vnd.android.cursor.dir/vnd.pt.isel.pdm.yamba";
+    private static final String MIME_BASE_ITEM = "vnd.android.cursor.item/vnd.pt.isel.pdm.yamba";
+
+    private static final String MIME_TWEET_ALL = MIME_BASE_DIR +  ".tweet";
+    private static final String MIME_TWEET_ONE = MIME_BASE_ITEM + ".tweet";
+    private static final String MIME_USER_ALL = MIME_BASE_DIR +  ".user";
+    private static final String MIME_USER_ONE = MIME_BASE_ITEM + ".user";
+
+    @Override
+    public String getType(Uri uri) {
+        int match = uriMatcher.match(uri);
+        switch (match)
+        {
+        case TWITTER_ALL:
+            return MIME_TWEET_ALL;
+        case TWITTER_ID:
+            return MIME_TWEET_ONE;
+        case USER_ALL:
+            return MIME_USER_ALL;
+        case USER_ID:
+            return MIME_USER_ONE;
+        default:
+            return null;
+        }
+    }
 }
