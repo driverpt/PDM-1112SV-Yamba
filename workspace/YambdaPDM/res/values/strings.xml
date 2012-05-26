@@ -41,5 +41,8 @@
     <string name="friendsDescription">Friends</string>
     <string name="followersDescription">Followers</string>
     <string name="postsCountDescription">Posts</string>
+    <string name="auto_timeline_update">timeline auto updates</string>
+    <string name="auto_timeline_update_sum">Enables or disables timeline automatic update</string>
+    
 
 </resources>
