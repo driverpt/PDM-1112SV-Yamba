@@ -55,7 +55,11 @@ public class PrefsActivity extends PreferenceActivity implements OnSharedPrefere
 
 			// We don't want to change the preference summary text, it's a checkbox, the value is quite obvious
 			if (key.equals( KEY_AUTOMATIC_TIMELINE_UPDATE )){
-				//setPreferenceSummary( key, "" + appPrefs.getBoolean(key, false ) );
+				// if the value is true, then start the service that automatically updates the timeline
+				if (appPrefs.getBoolean(KEY_AUTOMATIC_TIMELINE_UPDATE, false))
+					((YambaPDMApplication) getApplication()).startTimelineAutomaticUpdates();
+				else
+					((YambaPDMApplication) getApplication()).stopTimelineAutomaticUpdates();
 				return;
 			}
 			if ( key.equals( KEY_TIMELINE_REFRESH ) ) {
@@ -69,7 +73,7 @@ public class PrefsActivity extends PreferenceActivity implements OnSharedPrefere
 				}
 				return;
 			}
-			
+
 			setPreferenceSummary( key, appPrefs.getString( key, getString( R.string.no_pref_available ) ) );
 		} catch ( NullPointerException exception ) {
 			Log.d( "PDM", String.format( "Preference Key not present in the menu: %s", key ), exception );

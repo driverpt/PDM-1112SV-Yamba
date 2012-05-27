@@ -18,9 +18,14 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateUtils;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -58,15 +63,19 @@ OnYambaTimelineChangeListener {
         setContentView( R.layout.timeline );
         super.onCreate( savedInstanceState );
         view = (ListView) findViewById( android.R.id.list );
+        
+        // registers the listview for the context menu
+        registerForContextMenu(view);  
+        
         view.setOnItemClickListener( this );
 
         refreshButton = (Button) findViewById( R.id.refreshButton );
         refreshButton.setOnClickListener( this );
 
         YambaPDMApplication app = (YambaPDMApplication) getApplication();
-        if ( app.lastRefresh != null && !app.lastRefresh.isEnabled() ) {
-            disableRefresh();
-        }
+        //if ( app.lastRefresh != null && !app.lastRefresh.isEnabled() ) {
+         disableRefresh();
+        //}
 
         app.lastRefresh = refreshButton;
 
@@ -120,6 +129,7 @@ OnYambaTimelineChangeListener {
     }
 
     private void updateTimeline() {
+    	disableRefresh();
         Intent intent = new Intent( this, TimelineService.class );
 
         intent.putExtra( TimelineService.OPERATION, TimelineService.MSG_UPDATE_TIMELINE );
@@ -146,6 +156,33 @@ OnYambaTimelineChangeListener {
         refresh.setEnabled( true );
     }
 
+    
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+    	menu.setHeaderTitle(R.string.timelinectxmenu_title);
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.timeline_context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item)
+    {
+    	AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+    	TwitterStatus status = (TwitterStatus)view.getItemAtPosition(info.position);
+    	
+
+    	if (item.getItemId() == R.id.timelineemailctxmenu_sendemail)
+    	{
+    		Intent it = new Intent(Intent.ACTION_SEND);
+    		it.setType("message/rfc822"); 
+            it.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.timelineitem_emailsubject));
+            it.putExtra(Intent.EXTRA_TEXT, status.getDataForEmail());
+            startActivity(it);
+    	}
+    	return true;
+    }
+    
     public void onItemClick( AdapterView< ? > parent, View view, int position, long id ) {
         Intent intent = new Intent( this, DetailActivity.class );
         intent.addFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
@@ -165,6 +202,7 @@ OnYambaTimelineChangeListener {
         }
     }
 
+    
     public void onYambaTimelineChange() {
         YambaPDMApplication app = (YambaPDMApplication) getApplication();
         List< Twitter.Status > currentTimeline = app.getCurrentTimeline();
@@ -194,5 +232,6 @@ OnYambaTimelineChangeListener {
         }
 
         adapter.notifyDataSetChanged();
+        enableRefresh();
     }
 }
