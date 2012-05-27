@@ -59,6 +59,10 @@ public class TwitterStatus extends TreeMap< String, Object > {
 //        return ( Integer ) get( KEY_POSTS_COUNT );
 //    }
 
+	public String getDataForEmail() {
+		return String.format("user: %s\ndate: %s\ntweet: %s\n", getUser(), getDate().toString(), getTweet()).toString();
+	}
+
 
 
 

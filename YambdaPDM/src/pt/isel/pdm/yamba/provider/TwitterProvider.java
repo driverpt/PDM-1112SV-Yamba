@@ -23,9 +23,9 @@ public class TwitterProvider  extends ContentProvider{
         Uri.parse(ContentResolver.SCHEME_CONTENT+"://"+AUTHORITY);
 
     private static final int TWEET_ALL = 1;
-    private static final int TWEET_ID = 2;
-    private static final int USER_ALL = 3;
-    private static final int USER_ID = 4;
+    private static final int TWEET_ID  = 2;
+    private static final int USER_ALL  = 3;
+    private static final int USER_ID   = 4;
     private static final int TWEET_TO_POST_ALL = 5;
     private static final int TWEET_TO_POST_ID = 6;
     
