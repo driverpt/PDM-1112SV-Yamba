@@ -1,6 +1,7 @@
 package pt.isel.pdm.yamba.provider;
 
 import pt.isel.pdm.yamba.provider.contract.TweetContract;
+import pt.isel.pdm.yamba.provider.contract.TweetPostContract;
 import pt.isel.pdm.yamba.provider.contract.UserContract;
 import pt.isel.pdm.yamba.provider.helper.TwitterHelper;
 import android.content.ContentProvider;
@@ -25,13 +26,17 @@ public class TwitterProvider  extends ContentProvider{
     private static final int TWEET_ID = 2;
     private static final int USER_ALL = 3;
     private static final int USER_ID = 4;
-
+    private static final int TWEET_TO_POST_ALL = 5;
+    private static final int TWEET_TO_POST_ID = 6;
+    
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     static {
         uriMatcher.addURI(AUTHORITY, "TWEET", TWEET_ALL);
         uriMatcher.addURI(AUTHORITY, "TWEET/#", TWEET_ID);
         uriMatcher.addURI(AUTHORITY, "USER", USER_ID);
         uriMatcher.addURI(AUTHORITY, "USER/#", USER_ID);
+        uriMatcher.addURI(AUTHORITY, "TWEET_TO_POST", TWEET_TO_POST_ALL);
+        uriMatcher.addURI(AUTHORITY, "TWEET_TO_POST/#", TWEET_TO_POST_ID);
     }
     @Override
     public boolean onCreate() {
@@ -96,6 +101,10 @@ public class TwitterProvider  extends ContentProvider{
             return new SelectionParameters(UserContract.TABLE,sel);
         case USER_ID:    
             return new SelectionParameters(UserContract.TABLE,UserContract._ID + "=" + uri.getLastPathSegment());
+        case TWEET_TO_POST_ALL: 
+            return new SelectionParameters(TweetPostContract.TABLE,sel);
+        case TWEET_TO_POST_ID:    
+            return new SelectionParameters(TweetPostContract.TABLE,TweetPostContract._ID + "=" + uri.getLastPathSegment());
         default:  
             return null;
         }
@@ -108,6 +117,9 @@ public class TwitterProvider  extends ContentProvider{
         case USER_ALL: 
         case USER_ID:    
             return UserContract.TABLE;
+        case TWEET_TO_POST_ALL: 
+        case TWEET_TO_POST_ID:    
+            return TweetPostContract.TABLE;
         default:  
             return null;
         }
@@ -119,6 +131,8 @@ public class TwitterProvider  extends ContentProvider{
     private static final String MIME_TWEET_ONE = MIME_BASE_ITEM + ".tweet";
     private static final String MIME_USER_ALL = MIME_BASE_DIR +  ".user";
     private static final String MIME_USER_ONE = MIME_BASE_ITEM + ".user";
+    private static final String MIME_TWEET_TO_POST_ALL = MIME_BASE_DIR +  ".tweetToPost";
+    private static final String MIME_TWEET_TO_POST_ONE = MIME_BASE_ITEM + ".tweetToPost";
     @Override
     public String getType(Uri uri) {
         int match = uriMatcher.match(uri);
@@ -132,6 +146,10 @@ public class TwitterProvider  extends ContentProvider{
             return MIME_USER_ALL;
         case USER_ID:
             return MIME_USER_ONE;
+        case TWEET_TO_POST_ALL:
+            return MIME_TWEET_TO_POST_ALL;
+        case TWEET_TO_POST_ID:
+            return MIME_TWEET_TO_POST_ONE;
         default:
             return null;
         }

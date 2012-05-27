@@ -1,6 +1,7 @@
 package pt.isel.pdm.yamba.provider.helper;
 
 import pt.isel.pdm.yamba.provider.contract.TweetContract;
+import pt.isel.pdm.yamba.provider.contract.TweetPostContract;
 import pt.isel.pdm.yamba.provider.contract.UserContract;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -33,6 +34,7 @@ public class TwitterHelper extends SQLiteOpenHelper{
     private void createAllTables(SQLiteDatabase db){
         createUsersTable(db);
         createTweetsTable(db);
+        createTweetToPostTable(db);
     }
     private void createTweetsTable(SQLiteDatabase db){
         String columns =       
@@ -52,6 +54,13 @@ public class TwitterHelper extends SQLiteOpenHelper{
             + UserContract.POSTS_COUNT      + " int not null";
         createTable(db,UserContract.TABLE ,columns);
     }
+    private void createTweetToPostTable(SQLiteDatabase db){
+        String columns =       
+            TweetPostContract._ID       + " integer primary key autoincrement, "
+            + TweetPostContract.DATE    + " datetime not null, "
+            + TweetPostContract.TWEET   + " int not null, ";
+        createTable(db,TweetPostContract.TABLE ,columns);
+    }
     private void createTable(SQLiteDatabase db, String tableName, String columnsDeclaration){
         String sql = "CREATE TABLE "+ tableName + "( "+ columnsDeclaration + " )";
         db.execSQL(sql);
@@ -62,12 +71,16 @@ public class TwitterHelper extends SQLiteOpenHelper{
     private void dropAllTables(SQLiteDatabase db){
         dropTweetsTable(db);
         dropUsersTable(db);
+        dropTweetsToPostTable(db);
     }
     private void dropTweetsTable(SQLiteDatabase db){
         dropTable(db, TweetContract.TABLE);
     }
     private void dropUsersTable(SQLiteDatabase db){
         dropTable(db, UserContract.TABLE);
+    }
+    private void dropTweetsToPostTable(SQLiteDatabase db){
+        dropTable(db, TweetPostContract.TABLE);
     }
     private void dropTable(SQLiteDatabase db,String tableName){
         db.execSQL("DROP TABLE if exists " + tableName); 
