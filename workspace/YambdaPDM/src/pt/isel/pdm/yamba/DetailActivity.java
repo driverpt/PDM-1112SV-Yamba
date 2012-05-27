@@ -50,13 +50,16 @@ public class DetailActivity extends Activity {
         setIntent(intent);
         Bundle extras = intent.getExtras();
 
+        
+        
+        
         String tweet   = extras.getString( TwitterStatus.KEY_TWEET );
         Date tweetDate = ( Date ) extras.get( TwitterStatus.KEY_DATE );
         String user    = extras.getString( TwitterStatus.KEY_USER );
         long tweetId    = extras.getLong( TwitterStatus.KEY_ID );
-        int friendsCount   = extras.getInt( TwitterStatus.KEY_FRIENDS_COUNT);
-        int followersCount = extras.getInt( TwitterStatus.KEY_FOLLOWERS_COUNT );
-        int postsCount     = extras.getInt( TwitterStatus.KEY_POSTS_COUNT );
+//        int friendsCount   = extras.getInt( TwitterStatus.KEY_FRIENDS_COUNT);
+//        int followersCount = extras.getInt( TwitterStatus.KEY_FOLLOWERS_COUNT );
+//        int postsCount     = extras.getInt( TwitterStatus.KEY_POSTS_COUNT );
         
         DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm" );
 
@@ -64,8 +67,8 @@ public class DetailActivity extends Activity {
         tweetView.setText( tweet );
         userView.setText( user );
         dateView.setText( dateFormat.format( tweetDate ) );
-        friendsView.setText(""+friendsCount);
-        followersView.setText(""+followersCount);;
-        postsView.setText(""+postsCount);
+//        friendsView.setText(""+friendsCount);
+//        followersView.setText(""+followersCount);;
+//        postsView.setText(""+postsCount);
     }
 }

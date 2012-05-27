@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import pt.isel.pdm.yamba.model.TwitterStatus;
+import pt.isel.pdm.yamba.model.User;
 import pt.isel.pdm.yamba.services.TimelineService;
 import winterwell.jtwitter.Twitter;
 
@@ -154,13 +155,12 @@ OnYambaTimelineChangeListener {
         {
             intent.putExtra( TwitterStatus.KEY_TWEET,           status.getTweet() );
             intent.putExtra( TwitterStatus.KEY_DATE,            status.getDate() );
-            intent.putExtra( TwitterStatus.KEY_USER,            status.getUser() );
+            intent.putExtra( TwitterStatus.KEY_USER,            status.getUser().getUsername() );
             intent.putExtra( TwitterStatus.KEY_ID,              status.getId() );
-            intent.putExtra( TwitterStatus.KEY_PHOTO_URI,       status.getPhotoUri() );
-            intent.putExtra( TwitterStatus.KEY_FOLLOWERS_COUNT, status.getFollowersCount() );
-            intent.putExtra( TwitterStatus.KEY_FRIENDS_COUNT,   status.getFriendsCount() );
-            intent.putExtra( TwitterStatus.KEY_POSTS_COUNT,     status.getPostsCount() );
-            
+//            intent.putExtra( TwitterStatus.KEY_PHOTO_URI,       status.getPhotoUri() );
+//            intent.putExtra( TwitterStatus.KEY_FOLLOWERS_COUNT, status.getFollowersCount() );
+//            intent.putExtra( TwitterStatus.KEY_FRIENDS_COUNT,   status.getFriendsCount() );
+//            intent.putExtra( TwitterStatus.KEY_POSTS_COUNT,     status.getPostsCount() );
             startActivity(intent);
         }
     }
@@ -171,17 +171,24 @@ OnYambaTimelineChangeListener {
 
         Hashtable<String,Bitmap> bmTable = new Hashtable<String, Bitmap>();
 
-        for ( Twitter.Status status : currentTimeline ) {            
+        for ( Twitter.Status status : currentTimeline ) {   
+            winterwell.jtwitter.Twitter.User twitterUser = status.getUser();
+            User user = new User(
+                    twitterUser.getId(), 
+                    twitterUser.getName(), 
+                    twitterUser.getFriendsCount(),
+                    twitterUser.getFollowersCount(),
+                    twitterUser.getStatusesCount());
+            
             TwitterStatus temp = new TwitterStatus( 
                     status.getId(), 
-                    status.getUser().
-                    getName(), 
+                    user,
                     status.getCreatedAt(),
-                    status.getText(), 
-                    status.getUser().getProfileImageUrl(),
-                    status.getUser().getFriendsCount(),
-                    status.getUser().getFollowersCount(),
-                    status.getUser().getStatusesCount()
+                    status.getText() 
+//                    status.getUser().getProfileImageUrl(),
+//                    status.getUser().getFriendsCount(),
+//                    status.getUser().getFollowersCount(),
+//                    status.getUser().getStatusesCount()
                     );
             timeline.add(temp);
         }
