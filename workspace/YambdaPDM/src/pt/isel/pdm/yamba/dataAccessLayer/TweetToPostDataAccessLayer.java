@@ -11,7 +11,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 public class TweetToPostDataAccessLayer {
-    //Tweets to post
+
     //GetMethods
     public static List<TweetToPost> getTweetsToPost(ContentProvider provider){
         Cursor cursor = provider.query(

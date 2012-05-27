@@ -13,6 +13,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 public class TweetDataAccessLayer {
+    
     //Get Mehtods
     public static TwitterStatus getTweet(ContentProvider provider, long id){
         Cursor cursor = provider.query(

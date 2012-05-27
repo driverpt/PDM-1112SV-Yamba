@@ -1,70 +1,67 @@
 package pt.isel.pdm.yamba.model;
 
+
 import java.util.Date;
-import java.util.TreeMap;
 
-@SuppressWarnings("serial")
-public class TwitterStatus extends TreeMap< String, Object > {
+import android.os.Parcel;
+import android.os.Parcelable;
 
-    public static final String KEY_ID              = "pdm_id";
-    public static final String KEY_DATE            = "pdm_date";
-    public static final String KEY_TIMESTAMP       = "pdm_timestamp";
-    public static final String KEY_USER            = "pdm_user";
-    public static final String KEY_TWEET           = "pdm_tweet";
-    //public static final String KEY_PHOTO_URI       = "pdm_photoUri";
-    //public static final String KEY_FRIENDS_COUNT   = "pdm_friendsCount";
-    //public static final String KEY_FOLLOWERS_COUNT = "pdm_followersCount";
-    //public static final String KEY_POSTS_COUNT     = "pdm_postsCount";
-
+public class TwitterStatus implements Parcelable{
+    
+    public static final String IDENTIFIER = "TWITTER.STATUS_PARCELABLE";    
+    private long _id;
+    private User _user;
+    private Date _date;
+    private String _tweet;
+    
     public TwitterStatus( long id, User user, Date date, String tweet){//, URI photoUri, int friendsCount, int followersCount, int postsCount) {
-        putData(id, user, date, tweet);//, photoUri,friendsCount, followersCount, postsCount);
-    }
-
-    private void putData(long id, User user, Date date, String tweet){ //URI pictureUri, int friendsCount, int followersCount, int postsCount) {
-        put( KEY_ID, id );
-        put( KEY_DATE, date );
-        put( KEY_USER, user );
-        put( KEY_TWEET, tweet );
-        put(KEY_TIMESTAMP, date.getTime());
-        //if (pictureUri != null)
-        //    put(KEY_PHOTO_URI, pictureUri);
-        //put( KEY_FRIENDS_COUNT, friendsCount );
-        //put( KEY_FOLLOWERS_COUNT, followersCount );
-        //put( KEY_POSTS_COUNT, postsCount );
-
+        _id = id;
+        _user = user;
+        _date = date;
+        _tweet = tweet;
     }
 
     public long getId() {
-        return ( ( Long ) get( KEY_ID ) ).longValue();
+        return _id;
     }
     public Date getDate() {
-        return ( Date ) get( KEY_DATE );
+        return _date;
     }
     public User getUser() {
-        return ( User ) get( KEY_USER );
+        return _user;
     }
     public String getTweet() {
-        return ( String ) get( KEY_TWEET );
+        return _tweet;
     }
-//    public URI getPhotoUri(){
-//        return (URI)get(KEY_PHOTO_URI);
-//    }
-//    public int getFriendsCount() {
-//        return ( Integer ) get( KEY_FRIENDS_COUNT );
-//    }
-//    public int getFollowersCount() {
-//        return ( Integer ) get( KEY_FOLLOWERS_COUNT );
-//    }
-//    public int getPostsCount() {
-//        return ( Integer ) get( KEY_POSTS_COUNT );
-//    }
+    
+    // **********************************************
+    //  for implementing Parcelable
+    // **********************************************
+    public int describeContents() {
+        return 0;
+    }
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(_id);
+        dest.writeString(_date.toString());
+        dest.writeString(_tweet);
+        dest.writeParcelable(_user, 0);
+    }
+    public static final Parcelable.Creator<TwitterStatus> CREATOR = new Parcelable.Creator<TwitterStatus>() {
+        public TwitterStatus createFromParcel(Parcel in) {
+            return new TwitterStatus(in);
+        }
 
-	public String getDataForEmail() {
-		return String.format("user: %s\ndate: %s\ntweet: %s\n", getUser(), getDate().toString(), getTweet()).toString();
-	}
-
-
-
-
-
+        public TwitterStatus[] newArray(int size) {
+            return new TwitterStatus[size];
+        }
+    };
+    private TwitterStatus(Parcel in) {
+        _id = in.readLong();
+        _date = new Date(in.readString());
+        _tweet = in.readString();
+        _user = in.readParcelable( User.class.getClassLoader());
+    }
+    public String getDataForEmail() {
+        return String.format("user: %s\ndate: %s\ntweet: %s\n", getUser(), getDate().toString(), getTweet()).toString();
+    }
 }

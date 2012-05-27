@@ -1,43 +1,33 @@
 package pt.isel.pdm.yamba;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.List;
 
+import pt.isel.pdm.yamba.model.TwitterStatus;
+import pt.isel.pdm.yamba.model.User;
+import pt.isel.pdm.yamba.services.TimelineService;
+import winterwell.jtwitter.Twitter;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateUtils;
+import android.view.LayoutInflater;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import pt.isel.pdm.yamba.model.TwitterStatus;
-import pt.isel.pdm.yamba.model.User;
-import pt.isel.pdm.yamba.services.TimelineService;
-import winterwell.jtwitter.Twitter;
 
 public class TimelineActivity extends PreferencesEnabledActivity implements OnClickListener, OnItemClickListener,
 OnYambaTimelineChangeListener {
@@ -46,15 +36,15 @@ OnYambaTimelineChangeListener {
     private static final int      MAX_CHARS_NO_LIMIT               = 140;
     private static final int      DEFAULT_MAX_TWEETS               = 50;
 
-    private List< TwitterStatus > timeline                         = initTimeline();
+    private ArrayList< TwitterStatus > timeline                         = initTimeline();
     private boolean               isFirstTime                      = true;
 
     private ListView              view;
-    private SimpleAdapter         adapter;
+    private ArrayAdapter<TwitterStatus>         adapter;
     private Button                refreshButton;
 
-    private static List< TwitterStatus > initTimeline() {
-        List< TwitterStatus > l = new ArrayList< TwitterStatus >();
+    private static ArrayList< TwitterStatus > initTimeline() {
+        ArrayList< TwitterStatus > l = new ArrayList< TwitterStatus >();
         return l;
     }
 
@@ -79,9 +69,7 @@ OnYambaTimelineChangeListener {
 
         app.lastRefresh = refreshButton;
 
-        String[] from = { TwitterStatus.KEY_USER, TwitterStatus.KEY_TIMESTAMP, TwitterStatus.KEY_TWEET };
-        int[] to = { R.id.user, R.id.date, R.id.tweet};
-        adapter = new TweetAdapter( this, timeline, R.layout.timeline_item, from, to );
+        adapter = new TweetAdapter( this, R.layout.timeline_item, timeline  );
         view.setAdapter( adapter );
 
         app.setOnYambaTimelineChangeListener( this );
@@ -91,40 +79,50 @@ OnYambaTimelineChangeListener {
             isFirstTime = false;
         }
     }
+    
 
-    private class TweetAdapter extends SimpleAdapter {
 
-        public TweetAdapter( Context context, List< TwitterStatus > data, int resource, String[] from, int[] to ) {
-            super( context, data, resource, from, to );
+    private class TweetAdapter extends ArrayAdapter<TwitterStatus> {
+        private ArrayList<TwitterStatus> entries;
+        private Activity activity;
+        public TweetAdapter(Activity a, int textViewResourceId, ArrayList<TwitterStatus > entries) {
+            super(a, textViewResourceId, entries);
+            this.entries = entries;
+            this.activity = a;
+        } 
+        
+        class ViewHolder{
+            public ImageView photo;
+            public TextView user;
+            public TextView date;
+            public TextView tweet;
         }
-
         @Override
-        public void setViewText( TextView v, String text ) {
-            switch ( v.getId() ) {
-            case R.id.tweet: {
-                SharedPreferences prefs = ((YambaPDMApplication) getApplication()).getSharedPreferences();
-                String strPrefs = prefs.getString( PrefsActivity.KEY_MAX_PRESENTED_CHARS,
-                        String.valueOf( MAX_CHARS_NO_LIMIT ) );
-                if ( !strPrefs.isEmpty() ) {
-                    int max_chars = Integer.parseInt( strPrefs );
-                    if ( max_chars < text.length() ) {
-                        text = text.substring( 0, max_chars ).concat( TERMINATOR_SHORT_TEXT_TERMINATOR );
-                    }
-                }
-                v.setText( text );
-                break;
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View v = convertView;
+            ViewHolder holder;
+            if (v == null) {
+                LayoutInflater vi =
+                    (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v = vi.inflate(R.layout.timeline_item, null);
+                holder = new ViewHolder();
+                holder.photo = (ImageView) v.findViewById(R.id.photoUri);
+                holder.user = (TextView) v.findViewById(R.id.user);
+                holder.date = (TextView) v.findViewById(R.id.date);
+                holder.tweet= (TextView) v.findViewById(R.id.tweet);
+                v.setTag(holder);
             }
-            case R.id.date: {
-                long tweetTimeStamp = Long.parseLong( text );
-                String relativeTime = DateUtils.getRelativeTimeSpanString( tweetTimeStamp ).toString();
-                v.setText( relativeTime );
-                break;
+            else
+                holder=(ViewHolder)v.getTag();
+     
+            final TwitterStatus twitterStatus = entries.get(position);
+            if (twitterStatus!=null) {
+                //holder.photo.setImageBitmap(bm);
+                holder.user.setText(twitterStatus.getUser().getUsername());
+                holder.date.setText(DateUtils.getRelativeTimeSpanString( twitterStatus.getDate().getTime() ).toString());
+                holder.tweet.setText(twitterStatus.getTweet());
             }
-            default: {
-                super.setViewText( v, text );
-                break;
-            }
-            }
+            return v;
         }
     }
 
@@ -190,14 +188,7 @@ OnYambaTimelineChangeListener {
         TwitterStatus status = timeline.get(position);
         if (status != null)
         {
-            intent.putExtra( TwitterStatus.KEY_TWEET,           status.getTweet() );
-            intent.putExtra( TwitterStatus.KEY_DATE,            status.getDate() );
-            intent.putExtra( TwitterStatus.KEY_USER,            status.getUser().getUsername() );
-            intent.putExtra( TwitterStatus.KEY_ID,              status.getId() );
-//            intent.putExtra( TwitterStatus.KEY_PHOTO_URI,       status.getPhotoUri() );
-//            intent.putExtra( TwitterStatus.KEY_FOLLOWERS_COUNT, status.getFollowersCount() );
-//            intent.putExtra( TwitterStatus.KEY_FRIENDS_COUNT,   status.getFriendsCount() );
-//            intent.putExtra( TwitterStatus.KEY_POSTS_COUNT,     status.getPostsCount() );
+            intent.putExtra(TwitterStatus.IDENTIFIER, status);
             startActivity(intent);
         }
     }
@@ -206,8 +197,6 @@ OnYambaTimelineChangeListener {
     public void onYambaTimelineChange() {
         YambaPDMApplication app = (YambaPDMApplication) getApplication();
         List< Twitter.Status > currentTimeline = app.getCurrentTimeline();
-
-        Hashtable<String,Bitmap> bmTable = new Hashtable<String, Bitmap>();
 
         for ( Twitter.Status status : currentTimeline ) {   
             winterwell.jtwitter.Twitter.User twitterUser = status.getUser();
@@ -220,13 +209,9 @@ OnYambaTimelineChangeListener {
             
             TwitterStatus temp = new TwitterStatus( 
                     status.getId(), 
-                    user,
+                    user, 
                     status.getCreatedAt(),
                     status.getText() 
-//                    status.getUser().getProfileImageUrl(),
-//                    status.getUser().getFriendsCount(),
-//                    status.getUser().getFollowersCount(),
-//                    status.getUser().getStatusesCount()
                     );
             timeline.add(temp);
         }
