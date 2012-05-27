@@ -1,6 +1,5 @@
 package pt.isel.pdm.yamba.services;
 
-import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;

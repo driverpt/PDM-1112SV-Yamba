@@ -4,14 +4,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import pt.isel.pdm.yamba.model.TwitterStatus;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import pt.isel.pdm.yamba.model.TwitterStatus;
 
 public class DetailActivity extends Activity {
 
@@ -50,25 +49,26 @@ public class DetailActivity extends Activity {
         setIntent(intent);
         Bundle extras = intent.getExtras();
 
+        //User user = extras.getParcelable(User.IDENTIFIER);
+        TwitterStatus tStatus = extras.getParcelable(TwitterStatus.IDENTIFIER);
         
+        long tweetId   = tStatus.getId();
+        String tweet   = tStatus.getTweet();
+        Date tweetDate = tStatus.getDate();
         
-        
-        String tweet   = extras.getString( TwitterStatus.KEY_TWEET );
-        Date tweetDate = ( Date ) extras.get( TwitterStatus.KEY_DATE );
-        String user    = extras.getString( TwitterStatus.KEY_USER );
-        long tweetId    = extras.getLong( TwitterStatus.KEY_ID );
-//        int friendsCount   = extras.getInt( TwitterStatus.KEY_FRIENDS_COUNT);
-//        int followersCount = extras.getInt( TwitterStatus.KEY_FOLLOWERS_COUNT );
-//        int postsCount     = extras.getInt( TwitterStatus.KEY_POSTS_COUNT );
+        String username    = tStatus.getUser().getUsername();
+        int friendsCount   = tStatus.getUser().getFriendsCount();
+        int followersCount = tStatus.getUser().getFollowersCount();
+        int postsCount     = tStatus.getUser().getPostsCount();
         
         DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm" );
 
         idView.setText( getString( R.string.detail_message_id, tweetId ) );
         tweetView.setText( tweet );
-        userView.setText( user );
+        userView.setText( username );
         dateView.setText( dateFormat.format( tweetDate ) );
-//        friendsView.setText(""+friendsCount);
-//        followersView.setText(""+followersCount);;
-//        postsView.setText(""+postsCount);
+        friendsView.setText(""+friendsCount);
+        followersView.setText(""+followersCount);;
+        postsView.setText(""+postsCount);
     }
 }

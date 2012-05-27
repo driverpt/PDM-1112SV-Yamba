@@ -11,7 +11,6 @@ public class TweetToPost {
         _date = date;
         _text = text;
     }
-    
     public Date getDate(){
         return _date;
     }
