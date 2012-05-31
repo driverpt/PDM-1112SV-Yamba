@@ -2,22 +2,20 @@ package pt.isel.pdm.yamba.services;
 
 import java.util.List;
 
-import android.app.IntentService;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import pt.isel.pdm.yamba.YambaPDMApplication;
 import winterwell.jtwitter.Twitter;
 
-public class TimelineService extends IntentService {
+public class TimelineService extends ConnectivityAwareIntentService {
 
     private static final String LOGGER_TAG            = "Timeline Service";
 
@@ -29,20 +27,9 @@ public class TimelineService extends IntentService {
     public static final int     INVALID_OPERATION     = -1;
     public static final String  OPERATION             = "Timeline Operation";
 
-    private volatile boolean  hasConnectivity        = false;
-    
     private Handler             mainThreadHandler;
 
-    private BroadcastReceiver   mConnectivityReceiver = new BroadcastReceiver() {
-        
-        @Override
-        public void onReceive( Context context, Intent intent ) {
-            NetworkInfo networkInfo = intent.getParcelableExtra( ConnectivityManager.EXTRA_NETWORK_INFO );
-            hasConnectivity = networkInfo.isConnected();
-        }
-    };
-    
-    private IntentFilter mConnectivityReceiverFilter = new IntentFilter( ConnectivityManager.CONNECTIVITY_ACTION );
+    private Intent              mTimelineUpdateIntent;
     
     public TimelineService() {
         super( "TimelineService" );
@@ -56,9 +43,7 @@ public class TimelineService extends IntentService {
         
         ConnectivityManager connManager = (ConnectivityManager) getSystemService( Context.CONNECTIVITY_SERVICE );
         NetworkInfo networkInfo = connManager.getActiveNetworkInfo(); 
-        hasConnectivity = ( networkInfo != null && networkInfo.isConnected() );
-        
-        registerReceiver( mConnectivityReceiver, mConnectivityReceiverFilter );
+
     }
 
     @Override
@@ -73,6 +58,12 @@ public class TimelineService extends IntentService {
                 try {
                     final List< Twitter.Status > twitterStatus = app.getTwitter().getPublicTimeline();
                     app.setTimeline( twitterStatus );
+                    LocalBroadcastManager localBcast = LocalBroadcastManager.getInstance( this );
+                    if ( mTimelineUpdateIntent == null ) {
+                        mTimelineUpdateIntent = new Intent();
+                        mTimelineUpdateIntent.setAction( YambaPDMApplication.ACTION_YAMBA_TIMELINE_UPDATED );
+                    }
+                    localBcast.sendBroadcast( mTimelineUpdateIntent );
                 } catch ( final Exception e ) {
                     mainThreadHandler.post( new Runnable() {
                         public void run() {
@@ -99,5 +90,16 @@ public class TimelineService extends IntentService {
     @Override
     public IBinder onBind( Intent intent ) {
         return null;
+    }
+    
+    @Override
+    protected void onConnectivityAvailable() {
+        super.onConnectivityAvailable();
+    }
+    
+    @Override
+    protected void onConnectivityUnavailable() {
+        // TODO Auto-generated method stub
+        super.onConnectivityUnavailable();
     }
 }
