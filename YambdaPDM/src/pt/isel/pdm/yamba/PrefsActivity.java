@@ -61,11 +61,11 @@ public class PrefsActivity extends PreferenceActivity implements OnSharedPrefere
                 boolean isAutomaticUpdate = appPrefs.getBoolean( KEY_AUTOMATIC_TIMELINE_UPDATE, false );
                 if ( isAutomaticUpdate ) {
                     ((YambaPDMApplication) getApplication()).startTimelineAutomaticUpdates();
-                    getPreferenceScreen().findPreference( key ).setEnabled( true );
+                    getPreferenceScreen().findPreference( KEY_TIMELINE_REFRESH ).setEnabled( true );
                 }
                 else {
                     ((YambaPDMApplication) getApplication()).stopTimelineAutomaticUpdates();
-                    getPreferenceScreen().findPreference( key ).setEnabled( false );
+                    getPreferenceScreen().findPreference( KEY_TIMELINE_REFRESH ).setEnabled( false );
                 }
                 return;
             }
