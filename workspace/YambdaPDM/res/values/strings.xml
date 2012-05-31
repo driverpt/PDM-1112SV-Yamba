@@ -41,9 +41,10 @@
     <string name="friendsDescription">Friends</string>
     <string name="followersDescription">Followers</string>
     <string name="postsCountDescription">Posts</string>
-    <string name="auto_timeline_update">timeline auto updates</string>
-    <string name="auto_timeline_update_sum">Enables or disables timeline automatic update</string>
+    <string name="auto_timeline_update">Timeline Auto Updates</string>
+    <string name="auto_timeline_update_sum">Enables or Disables Timeline Automatic Update</string>
     <string name="timeline_context_menu_sendbyemail">Send by email</string>
     <string name="timelinectxmenu_title">Do what with tweet?</string>
     <string name="timelineitem_emailsubject">Check out this tweet!</string>
+    
     </resources>
