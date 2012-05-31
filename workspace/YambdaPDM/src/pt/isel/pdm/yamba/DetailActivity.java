@@ -4,13 +4,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import pt.isel.pdm.yamba.model.TwitterStatus;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import pt.isel.pdm.yamba.model.YambaPost;
 
 public class DetailActivity extends Activity {
 
@@ -23,52 +24,53 @@ public class DetailActivity extends Activity {
     private TextView  postsView;
     private ImageView userImage;
 
-
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.detail );
 
-        Log.d("PDM", "DetailActivity.onCreate");
+        Log.d( "PDM", "DetailActivity.onCreate" );
 
-        idView        = ( TextView ) findViewById( R.id.idTextView );
-        tweetView     = ( TextView ) findViewById( R.id.tweetTextView );
-        userView      = ( TextView ) findViewById( R.id.userTextView );
-        dateView      = ( TextView ) findViewById( R.id.dateTextView );
-        friendsView   = ( TextView ) findViewById( R.id.friendsView );
-        followersView = ( TextView ) findViewById( R.id.followersView );
-        postsView     = ( TextView ) findViewById( R.id.postsView );
-        userImage     = (ImageView ) findViewById( R.id.tweetDetailUserImage );
-        // HotFix for calling onNewIntent
-        // @see: http://charlesvilla.com/post/2011/07/30/Android-Top-Tip-2-SingleTop-Launch.aspx
-        onNewIntent(getIntent());
+        idView = (TextView) findViewById( R.id.idTextView );
+        tweetView = (TextView) findViewById( R.id.tweetTextView );
+        userView = (TextView) findViewById( R.id.userTextView );
+        dateView = (TextView) findViewById( R.id.dateTextView );
+        friendsView = (TextView) findViewById( R.id.friendsView );
+        followersView = (TextView) findViewById( R.id.followersView );
+        postsView = (TextView) findViewById( R.id.postsView );
+        userImage = (ImageView) findViewById( R.id.tweetDetailUserImage );
+
+        updateUi( getIntent() );
     }
 
     @Override
     protected void onNewIntent( Intent intent ) {
-        setIntent(intent);
+        updateUi( intent );
+    }
+    
+    private void updateUi( Intent intent ) {
         Bundle extras = intent.getExtras();
 
-        //User user = extras.getParcelable(User.IDENTIFIER);
-        TwitterStatus tStatus = extras.getParcelable(TwitterStatus.IDENTIFIER);
-        
-        long tweetId   = tStatus.getId();
-        String tweet   = tStatus.getTweet();
+        // User user = extras.getParcelable(User.IDENTIFIER);
+        YambaPost tStatus = extras.getParcelable( YambaPost.IDENTIFIER );
+
+        long tweetId = tStatus.getId();
+        String tweet = tStatus.getTweet();
         Date tweetDate = tStatus.getDate();
-        
-        String username    = tStatus.getUser().getUsername();
-        int friendsCount   = tStatus.getUser().getFriendsCount();
+
+        String username = tStatus.getUser().getUsername();
+        int friendsCount = tStatus.getUser().getFriendsCount();
         int followersCount = tStatus.getUser().getFollowersCount();
-        int postsCount     = tStatus.getUser().getPostsCount();
-        
+        int postsCount = tStatus.getUser().getPostsCount();
+
         DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm" );
 
         idView.setText( getString( R.string.detail_message_id, tweetId ) );
         tweetView.setText( tweet );
         userView.setText( username );
         dateView.setText( dateFormat.format( tweetDate ) );
-        friendsView.setText(""+friendsCount);
-        followersView.setText(""+followersCount);;
-        postsView.setText(""+postsCount);
+        friendsView.setText( "" + friendsCount );
+        followersView.setText( "" + followersCount );
+        postsView.setText( "" + postsCount );        
     }
 }

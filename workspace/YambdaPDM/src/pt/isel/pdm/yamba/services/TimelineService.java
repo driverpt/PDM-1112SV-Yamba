@@ -3,7 +3,12 @@ package pt.isel.pdm.yamba.services;
 import java.util.List;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -24,8 +29,21 @@ public class TimelineService extends IntentService {
     public static final int     INVALID_OPERATION     = -1;
     public static final String  OPERATION             = "Timeline Operation";
 
+    private volatile boolean  hasConnectivity        = false;
+    
     private Handler             mainThreadHandler;
 
+    private BroadcastReceiver   mConnectivityReceiver = new BroadcastReceiver() {
+        
+        @Override
+        public void onReceive( Context context, Intent intent ) {
+            NetworkInfo networkInfo = intent.getParcelableExtra( ConnectivityManager.EXTRA_NETWORK_INFO );
+            hasConnectivity = networkInfo.isConnected();
+        }
+    };
+    
+    private IntentFilter mConnectivityReceiverFilter = new IntentFilter( ConnectivityManager.CONNECTIVITY_ACTION );
+    
     public TimelineService() {
         super( "TimelineService" );
     }
@@ -35,6 +53,12 @@ public class TimelineService extends IntentService {
         super.onCreate();
         Log.d( LOGGER_TAG, "onCreate()" );
         mainThreadHandler = new Handler();
+        
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService( Context.CONNECTIVITY_SERVICE );
+        NetworkInfo networkInfo = connManager.getActiveNetworkInfo(); 
+        hasConnectivity = ( networkInfo != null && networkInfo.isConnected() );
+        
+        registerReceiver( mConnectivityReceiver, mConnectivityReceiverFilter );
     }
 
     @Override
@@ -69,6 +93,7 @@ public class TimelineService extends IntentService {
     public void onDestroy() {
         Log.d( LOGGER_TAG, "onDestroy()" );
         super.onDestroy();
+        unregisterReceiver( mConnectivityReceiver );
     }
 
     @Override

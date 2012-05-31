@@ -1,20 +1,21 @@
 package pt.isel.pdm.yamba.model;
 
-
 import java.util.Date;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class TwitterStatus implements Parcelable{
+import winterwell.jtwitter.Twitter.User;
+
+public class YambaPost implements Parcelable{
     
     public static final String IDENTIFIER = "TWITTER.STATUS_PARCELABLE";    
     private long _id;
-    private User _user;
+    private YambaUser _user;
     private Date _date;
     private String _tweet;
     
-    public TwitterStatus( long id, User user, Date date, String tweet){//, URI photoUri, int friendsCount, int followersCount, int postsCount) {
+    public YambaPost( long id, YambaUser user, Date date, String tweet){//, URI photoUri, int friendsCount, int followersCount, int postsCount) {
         _id = id;
         _user = user;
         _date = date;
@@ -27,7 +28,7 @@ public class TwitterStatus implements Parcelable{
     public Date getDate() {
         return _date;
     }
-    public User getUser() {
+    public YambaUser getUser() {
         return _user;
     }
     public String getTweet() {
@@ -44,18 +45,18 @@ public class TwitterStatus implements Parcelable{
         dest.writeLong(_id);
         dest.writeString(_date.toString());
         dest.writeString(_tweet);
-        dest.writeParcelable(_user, 0);
+        dest.writeParcelable(_user, 0); // Twitter.User is not Parcelable
     }
-    public static final Parcelable.Creator<TwitterStatus> CREATOR = new Parcelable.Creator<TwitterStatus>() {
-        public TwitterStatus createFromParcel(Parcel in) {
-            return new TwitterStatus(in);
+    public static final Parcelable.Creator<YambaPost> CREATOR = new Parcelable.Creator<YambaPost>() {
+        public YambaPost createFromParcel(Parcel in) {
+            return new YambaPost(in);
         }
 
-        public TwitterStatus[] newArray(int size) {
-            return new TwitterStatus[size];
+        public YambaPost[] newArray(int size) {
+            return new YambaPost[size];
         }
     };
-    private TwitterStatus(Parcel in) {
+    private YambaPost(Parcel in) {
         _id = in.readLong();
         _date = new Date(in.readString());
         _tweet = in.readString();
