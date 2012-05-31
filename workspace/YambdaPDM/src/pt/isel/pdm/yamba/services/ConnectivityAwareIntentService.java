@@ -10,52 +10,62 @@ import android.net.NetworkInfo;
 
 public abstract class ConnectivityAwareIntentService extends IntentService {
 
-    private volatile boolean            mHasConnectivity        = false;
-    private final ConnectivityManager connManager = (ConnectivityManager) getSystemService( Context.CONNECTIVITY_SERVICE );
-    protected final BroadcastReceiver    mConnectivityReceiver   = new BroadcastReceiver() {
-        
+    private volatile boolean    mHasConnectivity = false;
+    private ConnectivityManager mConnManager;
+    protected BroadcastReceiver mConnectivityReceiver;
+
+    private class ConnectivityAwareBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive( Context context, Intent intent ) {
             boolean hasNetwork = !intent.getBooleanExtra( ConnectivityManager.EXTRA_NO_CONNECTIVITY, true );
-            if( hasNetwork ) {
+            if ( hasNetwork ) {
                 updateNetworkInfo();
                 onConnectivityAvailable();
-            }
-            else {
+            } else {
                 mHasConnectivity = false;
             }
         }
-    };
-    
+    }
+
     private final IntentFilter mConnectivityReceiverFilter = new IntentFilter( ConnectivityManager.CONNECTIVITY_ACTION );
-    
+
     protected ConnectivityAwareIntentService( String name ) {
         super( name );
-    }    
-    
+    }
+
     protected boolean hasConnectivity() {
         return mHasConnectivity;
     }
-    
+
     @Override
     public void onCreate() {
         super.onCreate();
 
+        mConnManager = (ConnectivityManager) getSystemService( Context.CONNECTIVITY_SERVICE );
+        mConnectivityReceiver = new ConnectivityAwareBroadcastReceiver();
+
         updateNetworkInfo();
         
-        registerReceiver( mConnectivityReceiver, mConnectivityReceiverFilter );           
+        registerReceiver( mConnectivityReceiver, mConnectivityReceiverFilter );
     }
-    
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver( mConnectivityReceiver );
     }
-    
+
     private void updateNetworkInfo() {
-        NetworkInfo networkInfo = connManager.getActiveNetworkInfo(); 
-        mHasConnectivity = ( networkInfo != null && networkInfo.isConnected() );        
+        NetworkInfo networkInfo = mConnManager.getActiveNetworkInfo();
+        mHasConnectivity = (networkInfo != null 
+                         && networkInfo.getType() == ConnectivityManager.TYPE_WIFI
+                         && networkInfo.isConnected()
+                         );
     }
-    
-    protected abstract void onConnectivityAvailable();
+
+    protected void onConnectivityAvailable() {
+    }
+
+    protected void onConnectivityUnavailable() {
+    }
 }

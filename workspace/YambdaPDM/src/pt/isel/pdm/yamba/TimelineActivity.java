@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ContentProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -35,8 +34,6 @@ import winterwell.jtwitter.Twitter;
 
 public class TimelineActivity extends PreferencesEnabledActivity implements OnClickListener, OnItemClickListener,
         OnYambaTimelineChangeListener {
-
-    public static final String  YAMBA_TIMELINE_UPDATED = "YAMBA TIMELINE UPDATED";
     
     private static final String       TERMINATOR_SHORT_TEXT_TERMINATOR = "...";
     private static final int          MAX_CHARS_NO_LIMIT               = 140;
@@ -56,7 +53,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
         }
     };
     
-    private IntentFilter mReceiverFilter = new IntentFilter( YAMBA_TIMELINE_UPDATED );
+    private IntentFilter mReceiverFilter = new IntentFilter( YambaPDMApplication.ACTION_YAMBA_TIMELINE_UPDATED );
 
     
     
@@ -67,6 +64,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
+        
         setContentView( R.layout.timeline );
         super.onCreate( savedInstanceState );
         view = (ListView) findViewById( android.R.id.list );

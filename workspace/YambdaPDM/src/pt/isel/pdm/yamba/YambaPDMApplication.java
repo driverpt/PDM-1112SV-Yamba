@@ -11,14 +11,11 @@ import android.content.pm.ApplicationInfo;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.widget.Button;
 
-import pt.isel.pdm.yamba.model.YambaPost;
 import pt.isel.pdm.yamba.services.TimelineService;
 import pt.isel.pdm.yamba.services.WifiTimelineAutoUpdaterService;
-
 import winterwell.jtwitter.Twitter;
 
 public class YambaPDMApplication extends Application implements OnSharedPreferenceChangeListener, Runnable {
@@ -34,6 +31,8 @@ public class YambaPDMApplication extends Application implements OnSharedPreferen
 
     private Runnable                       lastTimelineServiceRunnableToken;
     private Handler                        handler;
+    
+    public static final String             ACTION_YAMBA_TIMELINE_UPDATED = "pt.isel.pdm.yamba.TIMELINE_UPDATED";
 
     @Override
     public void onCreate() {
