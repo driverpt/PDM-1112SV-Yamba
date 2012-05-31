@@ -4,8 +4,8 @@ import java.sql.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import pt.isel.pdm.yamba.model.TwitterStatus;
-import pt.isel.pdm.yamba.model.User;
+import pt.isel.pdm.yamba.model.YambaPost;
+import pt.isel.pdm.yamba.model.YambaUser;
 import pt.isel.pdm.yamba.provider.contract.TweetContract;
 import winterwell.jtwitter.Twitter.Status;
 import android.content.ContentProvider;
@@ -15,7 +15,7 @@ import android.database.Cursor;
 public class TweetDataAccessLayer {
     
     //Get Mehtods
-    public static TwitterStatus getTweet(ContentProvider provider, long id){
+    public static YambaPost getTweet(ContentProvider provider, long id){
         Cursor cursor = provider.query(
                 TweetContract.CONTENT_URI,
                 getProjection(),
@@ -28,7 +28,7 @@ public class TweetDataAccessLayer {
         }
         return null;
     }
-    public static List<TwitterStatus> getTweetsFrom(ContentProvider provider, long timestamp, int count){
+    public static List<YambaPost> getTweetsFrom(ContentProvider provider, long timestamp, int count){
         Cursor cursor = provider.query(
                 TweetContract.CONTENT_URI,
                 getProjection(),
@@ -36,7 +36,7 @@ public class TweetDataAccessLayer {
                 new String[]{timestamp+""},null);
         
         if(cursor != null && cursor.getCount() > 0){
-            List<TwitterStatus> toReturn = new LinkedList<TwitterStatus>();
+            List<YambaPost> toReturn = new LinkedList<YambaPost>();
             while (cursor.moveToNext()) {
                 toReturn.add(getTwitterStatusFromCursor(provider,cursor));
             }
@@ -44,7 +44,7 @@ public class TweetDataAccessLayer {
         }
         return null;
     }
-    public static List<TwitterStatus> getAllTweets(ContentProvider provider){
+    public static List<YambaPost> getAllTweets(ContentProvider provider){
         Cursor cursor = provider.query(
                 TweetContract.CONTENT_URI,
                 getProjection(),
@@ -53,7 +53,7 @@ public class TweetDataAccessLayer {
                 null);
         
         if(cursor != null && cursor.getCount() > 0){
-            List<TwitterStatus> toReturn = new LinkedList<TwitterStatus>();
+            List<YambaPost> toReturn = new LinkedList<YambaPost>();
             while (cursor.moveToNext()) {
                 toReturn.add(getTwitterStatusFromCursor(provider,cursor));
             }
@@ -74,13 +74,13 @@ public class TweetDataAccessLayer {
                 TweetContract.DATE
         };
     }
-    private static TwitterStatus getTwitterStatusFromCursor(ContentProvider provider,Cursor cursor){
+    private static YambaPost getTwitterStatusFromCursor(ContentProvider provider,Cursor cursor){
         long id = cursor.getLong(cursor.getColumnIndex(TweetContract._ID));
         String username = cursor.getString(cursor.getColumnIndex(TweetContract.USER));
         String tweet = cursor.getString(cursor.getColumnIndex(TweetContract.TWEET));
         Date date = Date.valueOf(cursor.getString(cursor.getColumnIndex(TweetContract.DATE)));
-        User user = UserDataAccessLayer.getUser(provider, username);
-        return new TwitterStatus(id,user, date, tweet);
+        YambaUser user = UserDataAccessLayer.getUser(provider, username);
+        return new YambaPost(id,user, date, tweet);
     }
     private static ContentValues getContentValuesFromTwitterStatus(Status tweet){
         ContentValues cv = new ContentValues();

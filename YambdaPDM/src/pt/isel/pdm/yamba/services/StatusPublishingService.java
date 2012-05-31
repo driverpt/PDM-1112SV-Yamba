@@ -1,6 +1,5 @@
 package pt.isel.pdm.yamba.services;
 
-import android.app.IntentService;
 import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
@@ -9,7 +8,7 @@ import android.widget.Toast;
 import pt.isel.pdm.yamba.YambaPDMApplication;
 import winterwell.jtwitter.Twitter;
 
-public class StatusPublishingService extends IntentService {
+public class StatusPublishingService extends ConnectivityAwareIntentService {
 
     private static final String LOGGER_TAG   = "StatusPublishing";
 
@@ -30,7 +29,7 @@ public class StatusPublishingService extends IntentService {
         setIntentRedelivery( true );
         twitter = ((YambaPDMApplication) getApplication()).getTwitter();
         mainHandler = new Handler();
-        Log.d( LOGGER_TAG, "StatusPublishingService.onCreate()" );
+        Log.d( LOGGER_TAG, "StatusPublishingService.onCreate()" );      
     }
 
     @Override
@@ -39,8 +38,13 @@ public class StatusPublishingService extends IntentService {
         String message = intent.getStringExtra( TWEET_MSG );
         Log.d( LOGGER_TAG, String.format( "Tweet Message: %s", intent.getStringExtra( TWEET_MSG ) ) );
         try {
-            twitter.updateStatus( message );
-            Log.d( LOGGER_TAG, String.format( "Message Sucessefully Posted" ) );
+            if( hasConnectivity() ) {
+                twitter.updateStatus( message );
+                Log.d( LOGGER_TAG, String.format( "Message Sucessfully Posted" ) );
+            }
+            else {
+                // TODO: Store in ContentProvider for future publishing
+            }
         } catch ( final Exception e ) {
             mainHandler.post( new Runnable() {
                 public void run() {
@@ -55,5 +59,10 @@ public class StatusPublishingService extends IntentService {
     public void onDestroy() {
         super.onDestroy();
         Log.d( LOGGER_TAG, "StatusPublishingService.onDestroy()" );
+    }
+
+    @Override
+    protected void onConnectivityAvailable() {
+        // TODO: Retrieve data from ContentProvider and start publishing it into Twitter
     }
 }

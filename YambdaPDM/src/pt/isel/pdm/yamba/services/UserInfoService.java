@@ -49,7 +49,7 @@ public class UserInfoService extends Service {
         YambaPDMApplication app = ( YambaPDMApplication ) getApplication();
         Twitter twitter = app.getTwitter();
         String screenName = twitter.getScreenName();
-        //TODO: Modificar para utilizar a bd  
+        //TODO: Modificar para utilizar a bd
         User user = twitter.getUser( screenName );
         return user;
     }

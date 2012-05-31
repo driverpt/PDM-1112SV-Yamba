@@ -1,14 +1,12 @@
 package pt.isel.pdm.yamba;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import pt.isel.pdm.yamba.services.StatusPublishingService;
 
@@ -42,18 +40,12 @@ public class StatusActivity extends PreferencesEnabledActivity implements OnClic
         startService( intent );
     }
 
-
-    /** Displays a Toast with long length duration */
-    private void showToast(String txt) {
-        Toast.makeText(StatusActivity.this, txt, Toast.LENGTH_LONG).show();
-    }
-
-    /** Enable submit button of last activity */
-    private void enableSubmit() {
-        Button submit = ((YambaPDMApplication) getApplication()).lastSubmit;
-        submit.setEnabled(true);
-        submit.setText(R.string.buttonUpdate);
-    }
+//    /** Enable submit button of last activity */
+//    private void enableSubmit() {
+//        Button submit = ((YambaPDMApplication) getApplication()).lastSubmit;
+//        submit.setEnabled(true);
+//        submit.setText(R.string.buttonUpdate);
+//    }
 
     /** Disable submit button of this activity */
     private void disableSubmit() {
