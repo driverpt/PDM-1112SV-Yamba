@@ -20,7 +20,7 @@ public abstract class ConnectivityAwareIntentService extends IntentService {
     private class ConnectivityAwareBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive( Context context, Intent intent ) {
-            boolean hasNetwork = !intent.getBooleanExtra( ConnectivityManager.EXTRA_NO_CONNECTIVITY, true );
+            boolean hasNetwork = !intent.getBooleanExtra( ConnectivityManager.EXTRA_NO_CONNECTIVITY, false );
             if ( hasNetwork ) {
                 updateNetworkInfo();
                 onConnectivityAvailable();
