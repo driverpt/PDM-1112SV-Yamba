@@ -10,7 +10,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -28,6 +34,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import pt.isel.pdm.yamba.model.YambaPost;
@@ -50,6 +57,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
 
     private ListView                  view;
     private ArrayAdapter< YambaPost > adapter;
+    private SimpleCursorAdapter       mCursorAdapter;
     private Button                    refreshButton;
 
     private BroadcastReceiver         mReceiver;
@@ -58,23 +66,8 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
         @Override
         public void onReceive( Context context, Intent intent ) {
             Log.d(LOGGER_TAG, "TimelineUpdatedBroadcastReceiver.onReceive() called");
-            Cursor mCursor = getContentResolver().query( TweetContract.CONTENT_URI
-                                                       , new String[] { TweetContract._ID, TweetContract.TIMESTAMP, TweetContract.TWEET, TweetContract.USER }
-                                                       , null
-                                                       , null
-                                                       , "timestamp ASC" 
-                                                     );
-            try {
-                timeline.clear();
-                while( mCursor.moveToNext() ) {
-                    YambaPost temp = new YambaPost( mCursor.getLong( 1 ), null, new Date(mCursor.getLong( 2 )), mCursor.getString( 3 ) );
-                    timeline.add(temp);
-                }
-            } finally {
-                mCursor.close();
-            }
+            updateCursor();
 
-            adapter.notifyDataSetChanged();
             Log.d( LOGGER_TAG, "onReceive() called" );
         }
     }
@@ -104,33 +97,99 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
 
         refreshButton = ( Button ) findViewById( R.id.refreshButton );
         refreshButton.setOnClickListener( this );
-
+               
         YambaPDMApplication app = ( YambaPDMApplication ) getApplication();
         // if ( app.lastRefresh != null && !app.lastRefresh.isEnabled() ) {
         disableRefresh();
         // }
 
         app.lastRefresh = refreshButton;
-
-        adapter = new TweetAdapter( this, R.layout.timeline_item, timeline );
-        view.setAdapter( adapter );
+        
+        mCursorAdapter = new TweetCursorAdapter( this, R.layout.timeline_item, null );
+        // adapter = new TweetAdapter( this, R.layout.timeline_item, timeline );
+        
+        view.setAdapter( mCursorAdapter );
 
         app.setOnYambaTimelineChangeListener( this );
-
+        
+        LocalBroadcastManager.getInstance( this ).registerReceiver( mReceiver, mReceiverFilter );
+        
         if ( isFirstTime ) {
-            updateTimeline();
+            updateCursor();
             isFirstTime = false;
-        }        
+        }
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.d(LOGGER_TAG, "onStart() called");
-        registerReceiver( mReceiver, mReceiverFilter );
-
+    private void updateCursor() {       
+        TimelineCursorUpdateTask task = new TimelineCursorUpdateTask();
+        task.execute();
     }
+    
+    private class TimelineCursorUpdateTask extends AsyncTask< Void, Void, Cursor > {
 
+        
+        @Override
+        protected Cursor doInBackground( Void ... params ) {
+            Cursor mNewCursor = getContentResolver().query( TweetContract.CONTENT_URI
+                                                          , new String[] { TweetContract._ID, TweetContract.TIMESTAMP, TweetContract.TWEET, TweetContract.USER }
+                                                          , null
+                                                          , null
+                                                          , "timestamp DESC"
+                                                          );
+            return mNewCursor;
+        }
+        
+        @Override
+        protected void onPostExecute( Cursor result ) {
+            if( result != null ) {
+                mCursorAdapter.changeCursor( result );
+                mCursorAdapter.notifyDataSetChanged();
+            }
+            enableRefresh();
+            super.onPostExecute( result );
+        }
+    }
+    
+    static final String[] FROM = { TweetContract.TIMESTAMP, TweetContract.TWEET, TweetContract.USER };
+    static final int[] TO = new int[] { R.id.date, R.id.tweet, R.id.user };
+    
+    private class TweetCursorAdapter extends SimpleCursorAdapter {
+
+        public TweetCursorAdapter( Context context, int layout, Cursor c ) {
+            super( context, R.layout.timeline_item, c, FROM, TO );
+            setViewBinder( new TweetCursorAdapterViewBinder() );
+        }
+        
+        @Override
+        public void bindView( View view, Context context, Cursor cursor ) {
+            super.bindView( view, context, cursor );
+            
+            Log.d(LOGGER_TAG, "bindView() from TweetCursorAdapter called");
+            
+        }
+        
+        private class TweetCursorAdapterViewBinder implements ViewBinder {
+            @Override
+            public boolean setViewValue( View arg0, Cursor arg1, int arg2 ) {
+                switch( arg0.getId() ) {
+                    case R.id.date:
+                        long timestamp = arg1.getLong( arg1.getColumnIndex( TweetContract.TIMESTAMP ) );
+                        (( TextView ) arg0).setText( DateUtils.getRelativeTimeSpanString( timestamp ).toString() );                        
+                        return true;
+                    case R.id.user:
+                        String user = arg1.getString( arg1.getColumnIndex( TweetContract.USER ) );
+                        (( TextView ) arg0).setText( user );
+                        return true;
+                    case R.id.tweet:
+                        String tweet = arg1.getString( arg1.getColumnIndex( TweetContract.TWEET ) );
+                        (( TextView ) arg0).setText( tweet );
+                        return true;
+                }
+                return false;
+            }
+        }
+    }
+    
     private class TweetAdapter extends ArrayAdapter< YambaPost > {
         private ArrayList< YambaPost > entries;
         private Activity               activity;
@@ -188,13 +247,13 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
     protected void onStop() {
         super.onStop();
         Log.d(LOGGER_TAG, "onStop() called");
-        unregisterReceiver( mReceiver );
     }
 
     @Override
     protected void onDestroy() {
         YambaPDMApplication app = ( YambaPDMApplication ) getApplication();
         app.setOnYambaTimelineChangeListener( null );
+        LocalBroadcastManager.getInstance( this ).unregisterReceiver( mReceiver );
         super.onDestroy();
     }
 
