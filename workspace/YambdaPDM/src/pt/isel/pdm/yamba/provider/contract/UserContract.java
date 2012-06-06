@@ -6,7 +6,7 @@ import android.provider.BaseColumns;
 
 public class UserContract{
 
-    public static final String TABLE    = "User";
+    public static final String TABLE    = "USER";
     public static final Uri CONTENT_URI = 
         Uri.withAppendedPath(TwitterProvider.CONTENT_URI, TABLE);
     public static final String 

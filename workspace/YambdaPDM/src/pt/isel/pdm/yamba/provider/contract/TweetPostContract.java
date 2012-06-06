@@ -6,7 +6,7 @@ import android.provider.BaseColumns;
 
 public class TweetPostContract {
     
-    public static final String TABLE    = "TweetToPost";
+    public static final String TABLE    = "TWEET_TO_POST";
     public static final Uri CONTENT_URI = 
         Uri.withAppendedPath(TwitterProvider.CONTENT_URI, TABLE);
     public static final String 
