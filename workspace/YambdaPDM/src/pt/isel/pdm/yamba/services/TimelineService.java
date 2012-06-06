@@ -2,17 +2,19 @@ package pt.isel.pdm.yamba.services;
 
 import java.util.List;
 
-import android.content.Context;
+import android.content.ContentValues;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.database.Cursor;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import pt.isel.pdm.yamba.provider.contract.TweetContract;
+
 import pt.isel.pdm.yamba.YambaPDMApplication;
+import pt.isel.pdm.yamba.provider.TwitterProvider;
 import winterwell.jtwitter.Twitter;
 
 public class TimelineService extends ConnectivityAwareIntentService {
@@ -30,7 +32,7 @@ public class TimelineService extends ConnectivityAwareIntentService {
     private Handler             mainThreadHandler;
 
     private Intent              mTimelineUpdateIntent;
-    
+
     public TimelineService() {
         super( "TimelineService" );
     }
@@ -40,24 +42,49 @@ public class TimelineService extends ConnectivityAwareIntentService {
         super.onCreate();
         Log.d( LOGGER_TAG, "onCreate()" );
         mainThreadHandler = new Handler();
-        
-        ConnectivityManager connManager = (ConnectivityManager) getSystemService( Context.CONNECTIVITY_SERVICE );
-        NetworkInfo networkInfo = connManager.getActiveNetworkInfo(); 
-
     }
 
     @Override
     protected void onHandleIntent( Intent intent ) {
         int operation = intent.getIntExtra( OPERATION, INVALID_OPERATION );
-        Log.d( "PDM", String.format( "onHandleIntent() called, operation = %d", operation ) );
+        Log.d( LOGGER_TAG, String.format( "onHandleIntent() called, operation = %d", operation ) );
 
-        YambaPDMApplication app = (YambaPDMApplication) getApplication();
+        YambaPDMApplication app = ( YambaPDMApplication ) getApplication();
 
         switch ( operation ) {
             case MSG_UPDATE_TIMELINE: {
                 try {
-                    final List< Twitter.Status > twitterStatus = app.getTwitter().getPublicTimeline();
-                    app.setTimeline( twitterStatus );
+                    if ( hasConnectivity() ) {
+                        final Twitter twitter = app.getTwitter();                       
+                        Cursor mCursor = getContentResolver().query( TwitterProvider.CONTENT_URI,
+                                new String[] { TweetContract._ID }, String.format( "max(%s)", TweetContract._ID ),
+                                null, null );
+                        long lastId = 0;
+                        try {
+                            if ( mCursor.moveToNext() ) {
+                                lastId = mCursor.getLong( 0 );
+                            }
+                        } finally {
+                            mCursor.close();
+                        }
+                        if( lastId != 0 ) {
+                            twitter.setSinceId( lastId );
+                        }
+                        
+                        final List< Twitter.Status > twitterStatus = twitter.getHomeTimeline();
+                        
+                        for( Twitter.Status status : twitterStatus ) {
+                            ContentValues values = new ContentValues();
+                            values.put( TweetContract._ID, status.getId() );
+                            // Date not possible
+                            //values.put( TweetContract.DATE, status.getCreatedAt() );
+                            values.put( TweetContract.TIMESTAMP, status.getCreatedAt().getTime() );
+                            values.put( TweetContract.USER, status.getUser().getScreenName() );
+                            values.put( TweetContract.TWEET, status.getText() );
+                            getContentResolver().insert( TwitterProvider.CONTENT_URI, values );
+                        }
+                    }
+
                     LocalBroadcastManager localBcast = LocalBroadcastManager.getInstance( this );
                     if ( mTimelineUpdateIntent == null ) {
                         mTimelineUpdateIntent = new Intent();
@@ -84,22 +111,22 @@ public class TimelineService extends ConnectivityAwareIntentService {
     public void onDestroy() {
         Log.d( LOGGER_TAG, "onDestroy()" );
         super.onDestroy();
-        unregisterReceiver( mConnectivityReceiver );
     }
 
     @Override
     public IBinder onBind( Intent intent ) {
         return null;
     }
-    
+
     @Override
     protected void onConnectivityAvailable() {
         super.onConnectivityAvailable();
+        Log.d( LOGGER_TAG, "onConnectivityAvailable() called" );
     }
-    
+
     @Override
     protected void onConnectivityUnavailable() {
-        // TODO Auto-generated method stub
         super.onConnectivityUnavailable();
+        Log.d( LOGGER_TAG, "onConnectivityUnavailable() called" );
     }
 }
