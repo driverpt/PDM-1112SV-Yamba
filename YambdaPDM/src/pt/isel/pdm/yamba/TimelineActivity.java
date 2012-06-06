@@ -1,6 +1,7 @@
 package pt.isel.pdm.yamba;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
@@ -8,8 +9,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -27,6 +30,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import pt.isel.pdm.yamba.provider.contract.TweetContract;
+
+import pt.isel.pdm.yamba.provider.TwitterProvider;
+
 import pt.isel.pdm.yamba.model.YambaPost;
 import pt.isel.pdm.yamba.model.YambaUser;
 import pt.isel.pdm.yamba.services.TimelineService;
@@ -34,7 +41,9 @@ import winterwell.jtwitter.Twitter;
 
 public class TimelineActivity extends PreferencesEnabledActivity implements OnClickListener, OnItemClickListener,
         OnYambaTimelineChangeListener {
-    
+
+    private static final String       LOGGER_TAG                       = "Timeline Activity";
+
     private static final String       TERMINATOR_SHORT_TEXT_TERMINATOR = "...";
     private static final int          MAX_CHARS_NO_LIMIT               = 140;
     private static final int          DEFAULT_MAX_TWEETS               = 50;
@@ -46,17 +55,39 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
     private ArrayAdapter< YambaPost > adapter;
     private Button                    refreshButton;
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver         mReceiver;
+
+    private class TimelineUpdatedBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive( Context context, Intent intent ) {
-            
+
+            Cursor mCursor = getContentResolver().query( TwitterProvider.CONTENT_URI
+                                                       , new String[] { TweetContract._ID, TweetContract.TIMESTAMP, TweetContract.TWEET, TweetContract.USER }
+                                                       , null
+                                                       , null
+                                                       , "timestamp ASC" 
+                                                     );
+            try {
+                timeline.clear();
+                while( mCursor.moveToNext() ) {
+                    YambaPost temp = new YambaPost( mCursor.getLong( 1 ), null, new Date(mCursor.getLong( 2 )), mCursor.getString( 3 ) );
+                    timeline.add(temp);
+                }
+            } finally {
+                mCursor.close();
+            }
+
+            adapter.notifyDataSetChanged();
+            Log.d( LOGGER_TAG, "onReceive() called" );
         }
-    };
-    
+    }
+
     private IntentFilter mReceiverFilter = new IntentFilter( YambaPDMApplication.ACTION_YAMBA_TIMELINE_UPDATED );
 
-    
-    
+    public TimelineActivity() {
+        mReceiver = new TimelineUpdatedBroadcastReceiver();
+    }
+
     private static ArrayList< YambaPost > initTimeline() {
         ArrayList< YambaPost > l = new ArrayList< YambaPost >();
         return l;
@@ -64,20 +95,20 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
-        
+
         setContentView( R.layout.timeline );
         super.onCreate( savedInstanceState );
-        view = (ListView) findViewById( android.R.id.list );
+        view = ( ListView ) findViewById( android.R.id.list );
 
         // registers the listview for the context menu
         registerForContextMenu( view );
 
         view.setOnItemClickListener( this );
 
-        refreshButton = (Button) findViewById( R.id.refreshButton );
+        refreshButton = ( Button ) findViewById( R.id.refreshButton );
         refreshButton.setOnClickListener( this );
 
-        YambaPDMApplication app = (YambaPDMApplication) getApplication();
+        YambaPDMApplication app = ( YambaPDMApplication ) getApplication();
         // if ( app.lastRefresh != null && !app.lastRefresh.isEnabled() ) {
         disableRefresh();
         // }
@@ -86,7 +117,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
 
         adapter = new TweetAdapter( this, R.layout.timeline_item, timeline );
         view.setAdapter( adapter );
-        
+
         app.setOnYambaTimelineChangeListener( this );
 
         if ( isFirstTime ) {
@@ -94,7 +125,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
             isFirstTime = false;
         }
     }
-    
+
     @Override
     public void onStart() {
         super.onStart();
@@ -123,16 +154,16 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
             View v = convertView;
             ViewHolder holder;
             if ( v == null ) {
-                LayoutInflater vi = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+                LayoutInflater vi = ( LayoutInflater ) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
                 v = vi.inflate( R.layout.timeline_item, null );
                 holder = new ViewHolder();
-                holder.photo = (ImageView) v.findViewById( R.id.photoUri );
-                holder.user = (TextView) v.findViewById( R.id.user );
-                holder.date = (TextView) v.findViewById( R.id.date );
-                holder.tweet = (TextView) v.findViewById( R.id.tweet );
+                holder.photo = ( ImageView ) v.findViewById( R.id.photoUri );
+                holder.user = ( TextView ) v.findViewById( R.id.user );
+                holder.date = ( TextView ) v.findViewById( R.id.date );
+                holder.tweet = ( TextView ) v.findViewById( R.id.tweet );
                 v.setTag( holder );
             } else
-                holder = (ViewHolder) v.getTag();
+                holder = ( ViewHolder ) v.getTag();
 
             final YambaPost twitterStatus = entries.get( position );
             if ( twitterStatus != null ) {
@@ -158,11 +189,11 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
     protected void onStop() {
         super.onStop();
         unregisterReceiver( mReceiver );
-    }    
-    
+    }
+
     @Override
     protected void onDestroy() {
-        YambaPDMApplication app = (YambaPDMApplication) getApplication();
+        YambaPDMApplication app = ( YambaPDMApplication ) getApplication();
         app.setOnYambaTimelineChangeListener( null );
         super.onDestroy();
     }
@@ -176,7 +207,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
     }
 
     private void enableRefresh() {
-        Button refresh = ((YambaPDMApplication) getApplication()).lastRefresh;
+        Button refresh = ( ( YambaPDMApplication ) getApplication() ).lastRefresh;
         refresh.setEnabled( true );
     }
 
@@ -190,8 +221,8 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
 
     @Override
     public boolean onContextItemSelected( MenuItem item ) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        YambaPost status = (YambaPost) view.getItemAtPosition( info.position );
+        AdapterContextMenuInfo info = ( AdapterContextMenuInfo ) item.getMenuInfo();
+        YambaPost status = ( YambaPost ) view.getItemAtPosition( info.position );
 
         if ( item.getItemId() == R.id.timelineemailctxmenu_sendemail ) {
             Intent it = new Intent( Intent.ACTION_SEND );
@@ -215,7 +246,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
     }
 
     public void onYambaTimelineChange() {
-        YambaPDMApplication app = (YambaPDMApplication) getApplication();
+        YambaPDMApplication app = ( YambaPDMApplication ) getApplication();
         List< Twitter.Status > currentTimeline = app.getCurrentTimeline();
 
         for ( Twitter.Status status : currentTimeline ) {
