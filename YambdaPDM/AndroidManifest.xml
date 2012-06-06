@@ -48,6 +48,10 @@
             android:name=".services.UserInfoService"
             android:process="pt.isel.pdm.yamba.UserInfoService"
             />
-        <provider android:name="pt.isel.pdm.yamba.provider.TwitterProvider" android:authorities="pt.isel.pdm.yamba.providers">></provider>
+        <provider 
+            android:name=".provider.TwitterProvider" 
+            android:authorities="pt.isel.pdm.yamba.providers"
+            >
+        </provider>
     </application>
 </manifest>
