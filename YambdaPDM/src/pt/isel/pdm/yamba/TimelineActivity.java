@@ -30,12 +30,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import pt.isel.pdm.yamba.provider.contract.TweetContract;
-
-import pt.isel.pdm.yamba.provider.TwitterProvider;
-
 import pt.isel.pdm.yamba.model.YambaPost;
 import pt.isel.pdm.yamba.model.YambaUser;
+import pt.isel.pdm.yamba.provider.contract.TweetContract;
 import pt.isel.pdm.yamba.services.TimelineService;
 import winterwell.jtwitter.Twitter;
 
@@ -60,8 +57,8 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
     private class TimelineUpdatedBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive( Context context, Intent intent ) {
-
-            Cursor mCursor = getContentResolver().query( TwitterProvider.CONTENT_URI
+            Log.d(LOGGER_TAG, "TimelineUpdatedBroadcastReceiver.onReceive() called");
+            Cursor mCursor = getContentResolver().query( TweetContract.CONTENT_URI
                                                        , new String[] { TweetContract._ID, TweetContract.TIMESTAMP, TweetContract.TWEET, TweetContract.USER }
                                                        , null
                                                        , null
@@ -123,13 +120,15 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
         if ( isFirstTime ) {
             updateTimeline();
             isFirstTime = false;
-        }
+        }        
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(LOGGER_TAG, "onStart() called");
         registerReceiver( mReceiver, mReceiverFilter );
+
     }
 
     private class TweetAdapter extends ArrayAdapter< YambaPost > {
@@ -188,6 +187,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
     @Override
     protected void onStop() {
         super.onStop();
+        Log.d(LOGGER_TAG, "onStop() called");
         unregisterReceiver( mReceiver );
     }
 
