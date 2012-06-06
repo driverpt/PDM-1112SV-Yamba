@@ -86,13 +86,12 @@ public class TimelineService extends ConnectivityAwareIntentService {
                             getContentResolver().insert( TweetContract.CONTENT_URI, values );
                         }
                         
-                        //LocalBroadcastManager localBcast = LocalBroadcastManager.getInstance( this );
+                        LocalBroadcastManager localBcast = LocalBroadcastManager.getInstance( this );
                         if ( mTimelineUpdateIntent == null ) {
                             mTimelineUpdateIntent = new Intent();
                             mTimelineUpdateIntent.setAction( YambaPDMApplication.ACTION_YAMBA_TIMELINE_UPDATED );
                         }
-                        //localBcast.sendBroadcast( mTimelineUpdateIntent );
-                        sendBroadcast( mTimelineUpdateIntent );
+                        localBcast.sendBroadcast( mTimelineUpdateIntent );
                     }
                 } catch ( final Exception e ) {
                     Log.e(LOGGER_TAG, "Exception Occurred on updating timeline", e);
