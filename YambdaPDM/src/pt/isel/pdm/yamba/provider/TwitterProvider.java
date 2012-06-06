@@ -105,7 +105,8 @@ public class TwitterProvider extends ContentProvider {
     }
 
     private SelectionParameters makeSelection( Uri uri, String sel ) {
-        switch ( uriMatcher.match( uri ) ) {
+        int matchResult = uriMatcher.match( uri ); 
+        switch ( matchResult ) {
             case TWEET_ALL:
                 return new SelectionParameters( TweetContract.TABLE, sel );
             case TWEET_ID:
