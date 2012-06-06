@@ -12,8 +12,6 @@ import pt.isel.pdm.yamba.provider.contract.UserContract;
 
 public class UserDataAccessLayer {
 
-    // lduarte 2012.05.09: Why static methods ?
-    // Get Methods
     public static YambaUser getUser( ContentProvider provider, String userName ) {
         Cursor cursor = provider.query( UserContract.CONTENT_URI
                                       , new String[] { UserContract._ID
@@ -24,7 +22,7 @@ public class UserDataAccessLayer {
                                                      }
                                       , String.format( "%s = ?", UserContract.USERNAME )
                                       , new String[] { userName }
-                                      , null // lduarte 2012.05.09: What does this Null Mean?????
+                                      , null
                 );
 
         if ( cursor != null && cursor.getCount() == 1 ) {
