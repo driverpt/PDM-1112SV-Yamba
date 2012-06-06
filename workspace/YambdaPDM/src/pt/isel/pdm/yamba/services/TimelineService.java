@@ -2,6 +2,7 @@ package pt.isel.pdm.yamba.services;
 
 import java.util.List;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,10 +12,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import pt.isel.pdm.yamba.provider.contract.TweetContract;
-
 import pt.isel.pdm.yamba.YambaPDMApplication;
-import pt.isel.pdm.yamba.provider.TwitterProvider;
+import pt.isel.pdm.yamba.provider.contract.TweetContract;
 import winterwell.jtwitter.Twitter;
 
 public class TimelineService extends ConnectivityAwareIntentService {
@@ -55,10 +54,14 @@ public class TimelineService extends ConnectivityAwareIntentService {
             case MSG_UPDATE_TIMELINE: {
                 try {
                     if ( hasConnectivity() ) {
-                        final Twitter twitter = app.getTwitter();                       
-                        Cursor mCursor = getContentResolver().query( TwitterProvider.CONTENT_URI,
-                                new String[] { TweetContract._ID }, String.format( "max(%s)", TweetContract._ID ),
-                                null, null );
+                        final Twitter twitter = app.getTwitter();
+                        ContentResolver contentResolver = getContentResolver();
+                        Cursor mCursor = contentResolver.query( TweetContract.CONTENT_URI
+                                                              , new String[] { "max( " + TweetContract._ID + ")" }
+                                                              , null
+                                                              , null
+                                                              , null 
+                                                              );
                         long lastId = 0;
                         try {
                             if ( mCursor.moveToNext() ) {
@@ -76,22 +79,23 @@ public class TimelineService extends ConnectivityAwareIntentService {
                         for( Twitter.Status status : twitterStatus ) {
                             ContentValues values = new ContentValues();
                             values.put( TweetContract._ID, status.getId() );
-                            // Date not possible
-                            //values.put( TweetContract.DATE, status.getCreatedAt() );
+                            values.put( TweetContract.DATE, status.getCreatedAt().toString() );
                             values.put( TweetContract.TIMESTAMP, status.getCreatedAt().getTime() );
                             values.put( TweetContract.USER, status.getUser().getScreenName() );
                             values.put( TweetContract.TWEET, status.getText() );
-                            getContentResolver().insert( TwitterProvider.CONTENT_URI, values );
+                            getContentResolver().insert( TweetContract.CONTENT_URI, values );
                         }
+                        
+                        //LocalBroadcastManager localBcast = LocalBroadcastManager.getInstance( this );
+                        if ( mTimelineUpdateIntent == null ) {
+                            mTimelineUpdateIntent = new Intent();
+                            mTimelineUpdateIntent.setAction( YambaPDMApplication.ACTION_YAMBA_TIMELINE_UPDATED );
+                        }
+                        //localBcast.sendBroadcast( mTimelineUpdateIntent );
+                        sendBroadcast( mTimelineUpdateIntent );
                     }
-
-                    LocalBroadcastManager localBcast = LocalBroadcastManager.getInstance( this );
-                    if ( mTimelineUpdateIntent == null ) {
-                        mTimelineUpdateIntent = new Intent();
-                        mTimelineUpdateIntent.setAction( YambaPDMApplication.ACTION_YAMBA_TIMELINE_UPDATED );
-                    }
-                    localBcast.sendBroadcast( mTimelineUpdateIntent );
                 } catch ( final Exception e ) {
+                    Log.e(LOGGER_TAG, "Exception Occurred on updating timeline", e);
                     mainThreadHandler.post( new Runnable() {
                         public void run() {
                             Toast.makeText( TimelineService.this,
@@ -104,7 +108,7 @@ public class TimelineService extends ConnectivityAwareIntentService {
             }
         }
 
-        app.scheduleTimelineService();
+//        app.scheduleTimelineService();
     }
 
     @Override
