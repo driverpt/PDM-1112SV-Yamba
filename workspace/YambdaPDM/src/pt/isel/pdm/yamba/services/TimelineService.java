@@ -15,6 +15,7 @@ import android.widget.Toast;
 import pt.isel.pdm.yamba.YambaPDMApplication;
 import pt.isel.pdm.yamba.provider.contract.TweetContract;
 import winterwell.jtwitter.Twitter;
+import winterwell.jtwitter.TwitterException;
 
 public class TimelineService extends ConnectivityAwareIntentService {
 
@@ -48,66 +49,69 @@ public class TimelineService extends ConnectivityAwareIntentService {
         int operation = intent.getIntExtra( OPERATION, INVALID_OPERATION );
         Log.d( LOGGER_TAG, String.format( "onHandleIntent() called, operation = %d", operation ) );
 
-        YambaPDMApplication app = ( YambaPDMApplication ) getApplication();
+        YambaPDMApplication app = (YambaPDMApplication) getApplication();
 
         switch ( operation ) {
             case MSG_UPDATE_TIMELINE: {
                 try {
-                    if ( hasConnectivity() ) {
-                        final Twitter twitter = app.getTwitter();
-                        ContentResolver contentResolver = getContentResolver();
-                        Cursor mCursor = contentResolver.query( TweetContract.CONTENT_URI
-                                                              , new String[] { "max( " + TweetContract._ID + ")" }
-                                                              , null
-                                                              , null
-                                                              , null 
-                                                              );
-                        long lastId = 0;
-                        try {
-                            if ( mCursor.moveToNext() ) {
-                                lastId = mCursor.getLong( 0 );
-                            }
-                        } finally {
-                            mCursor.close();
+                    final Twitter twitter = app.getTwitter();
+                    ContentResolver contentResolver = getContentResolver();
+                    Cursor mCursor = contentResolver.query( TweetContract.CONTENT_URI, new String[] { "max( "
+                            + TweetContract._ID + ")" }, null, null, null );
+                    long lastId = 0;
+                    try {
+                        if ( mCursor.moveToNext() ) {
+                            lastId = mCursor.getLong( 0 );
                         }
-                        if( lastId != 0 ) {
-                            twitter.setSinceId( lastId );
-                        }
-                        
-                        final List< Twitter.Status > twitterStatus = twitter.getHomeTimeline();
-                        
-                        for( Twitter.Status status : twitterStatus ) {
-                            ContentValues values = new ContentValues();
-                            values.put( TweetContract._ID, status.getId() );
-                            values.put( TweetContract.DATE, status.getCreatedAt().toString() );
-                            values.put( TweetContract.TIMESTAMP, status.getCreatedAt().getTime() );
-                            values.put( TweetContract.USER, status.getUser().getScreenName() );
-                            values.put( TweetContract.TWEET, status.getText() );
-                            getContentResolver().insert( TweetContract.CONTENT_URI, values );
-                        }
-                        
-                        LocalBroadcastManager localBcast = LocalBroadcastManager.getInstance( this );
-                        if ( mTimelineUpdateIntent == null ) {
-                            mTimelineUpdateIntent = new Intent();
-                            mTimelineUpdateIntent.setAction( YambaPDMApplication.ACTION_YAMBA_TIMELINE_UPDATED );
-                        }
-                        localBcast.sendBroadcast( mTimelineUpdateIntent );
+                    } finally {
+                        mCursor.close();
                     }
-                } catch ( final Exception e ) {
-                    Log.e(LOGGER_TAG, "Exception Occurred on updating timeline", e);
+                    if ( lastId != 0 ) {
+                        twitter.setSinceId( lastId );
+                    }
+
+                    final List< Twitter.Status > twitterStatus = twitter.getHomeTimeline();
+
+                    for ( Twitter.Status status : twitterStatus ) {
+                        ContentValues values = new ContentValues();
+                        values.put( TweetContract._ID, status.getId() );
+                        values.put( TweetContract.DATE, status.getCreatedAt().toString() );
+                        values.put( TweetContract.TIMESTAMP, status.getCreatedAt().getTime() );
+                        values.put( TweetContract.USER, status.getUser().getScreenName() );
+                        values.put( TweetContract.TWEET, status.getText() );
+                        getContentResolver().insert( TweetContract.CONTENT_URI, values );
+                    }
+
+                    LocalBroadcastManager localBcast = LocalBroadcastManager.getInstance( this );
+                    if ( mTimelineUpdateIntent == null ) {
+                        mTimelineUpdateIntent = new Intent();
+                        mTimelineUpdateIntent.setAction( YambaPDMApplication.ACTION_YAMBA_TIMELINE_UPDATED );
+                    }
+                    localBcast.sendBroadcast( mTimelineUpdateIntent );
+                } catch ( final TwitterException e ) {
+                    Log.e( LOGGER_TAG, "Twitter Error ocurred", e );
                     mainThreadHandler.post( new Runnable() {
                         public void run() {
-                            Toast.makeText( TimelineService.this,
-                                    String.format( "Error while updating timeline: %s", e.getMessage() ),
-                                    Toast.LENGTH_LONG ).show();
+                            Toast.makeText( TimelineService.this
+                                          , String.format( "Twitter Error: %s", e.getMessage() )
+                                          , Toast.LENGTH_LONG
+                                          ).show();
+                        }
+                    });
+                } catch ( final Exception e ) {
+                    Log.e( LOGGER_TAG, "Exception Occurred on updating timeline", e );
+                    mainThreadHandler.post( new Runnable() {
+                        public void run() {
+                            Toast.makeText( TimelineService.this
+                                          , String.format( "Error while updating timeline: %s", e.getMessage() )
+                                          , Toast.LENGTH_LONG 
+                                          ).show();
                         }
                     } );
                 }
                 break;
             }
         }
-
-//        app.scheduleTimelineService();
     }
 
     @Override

@@ -11,8 +11,8 @@ import android.util.Log;
 
 public abstract class ConnectivityAwareIntentService extends IntentService {
 
-    private static final String LOGGER_TAG = "ConnectivityAware Service";
-    
+    private static final String LOGGER_TAG       = "ConnectivityAware Service";
+
     private volatile boolean    mHasConnectivity = false;
     private ConnectivityManager mConnManager;
     protected BroadcastReceiver mConnectivityReceiver;
@@ -22,14 +22,18 @@ public abstract class ConnectivityAwareIntentService extends IntentService {
         public void onReceive( Context context, Intent intent ) {
             boolean hasNetwork = !intent.getBooleanExtra( ConnectivityManager.EXTRA_NO_CONNECTIVITY, false );
             if ( hasNetwork ) {
-                updateNetworkInfo();
-                onConnectivityAvailable();
+                NetworkInfo networkInfo = mConnManager.getActiveNetworkInfo();
+                if( hasNetworkInfoAndConnectivityAvailable( networkInfo ) ) {
+                    if( !mHasConnectivity ) {
+                        updateNetworkInfo( networkInfo );
+                        onConnectivityAvailable();
+                    }
+                }
             } else {
                 mHasConnectivity = false;
             }
         }
     }
-    
 
     private final IntentFilter mConnectivityReceiverFilter = new IntentFilter( ConnectivityManager.CONNECTIVITY_ACTION );
 
@@ -47,11 +51,12 @@ public abstract class ConnectivityAwareIntentService extends IntentService {
         super.onCreate();
 
         mConnManager = (ConnectivityManager) getSystemService( Context.CONNECTIVITY_SERVICE );
-        
-        updateNetworkInfo();
-        
+
+        NetworkInfo networkInfo = mConnManager.getActiveNetworkInfo();
+        updateNetworkInfo(networkInfo);
+
         Intent intent = registerReceiver( mConnectivityReceiver, mConnectivityReceiverFilter );
-        Log.d(LOGGER_TAG, String.format( "Receiver Registered, Intent=%s", intent ));
+        Log.d( LOGGER_TAG, String.format( "Receiver Registered, Intent=%s", intent ) );
     }
 
     @Override
@@ -60,19 +65,22 @@ public abstract class ConnectivityAwareIntentService extends IntentService {
         unregisterReceiver( mConnectivityReceiver );
     }
 
-    private void updateNetworkInfo() {
-        NetworkInfo networkInfo = mConnManager.getActiveNetworkInfo();
-        mHasConnectivity = (networkInfo != null 
-                         && networkInfo.getType() == ConnectivityManager.TYPE_WIFI
-                         && networkInfo.isConnected()
-                         );
+    private void updateNetworkInfo(NetworkInfo networkInfo) {
+        mHasConnectivity = hasNetworkInfoAndConnectivityAvailable( networkInfo );
+    }
+    
+    private boolean hasNetworkInfoAndConnectivityAvailable( NetworkInfo networkInfo ) {
+        return ( networkInfo != null 
+               && networkInfo.getType() == ConnectivityManager.TYPE_WIFI 
+               && networkInfo.isConnected()
+               );
     }
 
     protected void onConnectivityAvailable() {
-        Log.d(LOGGER_TAG, "onConnectivityAvailable() called");
+        Log.d( LOGGER_TAG, "onConnectivityAvailable() called" );
     }
 
     protected void onConnectivityUnavailable() {
-        Log.d(LOGGER_TAG, "onConnectivityUnavailable() called");
+        Log.d( LOGGER_TAG, "onConnectivityUnavailable() called" );
     }
 }
