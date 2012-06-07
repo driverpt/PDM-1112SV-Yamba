@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -26,13 +25,18 @@ public class PrefsActivity extends PreferenceActivity implements OnSharedPrefere
 
     protected SharedPreferences   appPrefs;
 
+    private YambaPDMApplication   app;
+
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         addPreferencesFromResource( R.xml.app_prefs );
-        appPrefs = ((YambaPDMApplication) getApplication()).getSharedPreferences();
+        app = ( YambaPDMApplication ) getApplication();
+        appPrefs = app.getSharedPreferences();
         appPrefs.registerOnSharedPreferenceChangeListener( this );
 
+        
+        
         updateAllPrefs();
     }
 
@@ -42,33 +46,59 @@ public class PrefsActivity extends PreferenceActivity implements OnSharedPrefere
         updatePreference( KEY_URL );
         updatePreference( KEY_MAX_PRESENTED_CHARS );
         updatePreference( KEY_MAX_PRESENTED_TWEETS );
-        updatePreference( KEY_TIMELINE_REFRESH );
         updatePreference( KEY_AUTOMATIC_TIMELINE_UPDATE );
+        updatePreference( KEY_TIMELINE_REFRESH );
     }
-
+    
+    private void defaultUpdateSummary( String key, String value, int id) {
+        if( value.isEmpty() ) {
+            setPreferenceSummary( key, getString( R.string.userSum ) );
+        }
+        else {
+            setPreferenceSummary( key, value );
+        }
+        
+    }
+    
     private void updatePreference( String key ) {
         try {
+            if ( key.equals( KEY_USERNAME ) ) {
+                String user = appPrefs.getString( key, "" );
+                defaultUpdateSummary(key, user, R.string.userSum);
+                return;
+            }
+            
             if ( key.equals( KEY_PASSWORD ) ) {
                 setPreferenceSummary( key, PASSWORD_FIELD );
                 return;
             }
-
+            
+            if ( key.equals( KEY_URL ) ) {
+                String Url = appPrefs.getString( key, "" );
+                defaultUpdateSummary(key, Url, R.string.userSum);
+                return;
+            }
+            
+            if ( key.equals( KEY_MAX_PRESENTED_CHARS ) ) {
+                String maxPresentedChars = appPrefs.getString( key, "" );
+                defaultUpdateSummary(key, maxPresentedChars, R.string.userSum);
+            }
+            
+            if ( key.equals( KEY_MAX_PRESENTED_TWEETS ) ) {
+                String maxPresentedTweets = appPrefs.getString( key, "" );
+                defaultUpdateSummary(key, maxPresentedTweets, R.string.max_presented_tweets_sum);
+            }
+            
             // We don't want to change the preference summary text, it's a
             // checkbox, the value is quite obvious
             if ( key.equals( KEY_AUTOMATIC_TIMELINE_UPDATE ) ) {
                 // if the value is true, then start the service that
-                // automatically updates the timeline
                 boolean isAutomaticUpdate = appPrefs.getBoolean( KEY_AUTOMATIC_TIMELINE_UPDATE, false );
-                if ( isAutomaticUpdate ) {
-                    ((YambaPDMApplication) getApplication()).startTimelineAutomaticUpdates();
-                    getPreferenceScreen().findPreference( KEY_TIMELINE_REFRESH ).setEnabled( true );
-                }
-                else {
-                    ((YambaPDMApplication) getApplication()).stopTimelineAutomaticUpdates();
-                    getPreferenceScreen().findPreference( KEY_TIMELINE_REFRESH ).setEnabled( false );
-                }
+                getPreferenceScreen().findPreference( KEY_TIMELINE_REFRESH ).setEnabled( isAutomaticUpdate );
+                // YambaPDMApplication already listens for SharedPreference changes and schedules
                 return;
             }
+            
             if ( key.equals( KEY_TIMELINE_REFRESH ) ) {
                 String timelineRefreshString = appPrefs.getString( key, NO_AUTOMATIC_UPDATE_STRING );
                 int interval = Integer.parseInt( timelineRefreshString );
@@ -89,10 +119,8 @@ public class PrefsActivity extends PreferenceActivity implements OnSharedPrefere
 
     public static boolean checkPreferences( Context ctx ) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( ctx );
-        if ( prefs.getString( KEY_USERNAME, "" ).isEmpty() 
-          || prefs.getString( KEY_PASSWORD, "" ).isEmpty()
-          || prefs.getString( KEY_URL     , "" ).isEmpty() 
-          ) {
+        if ( prefs.getString( KEY_USERNAME, "" ).isEmpty() || prefs.getString( KEY_PASSWORD, "" ).isEmpty()
+                || prefs.getString( KEY_URL, "" ).isEmpty() ) {
             return false;
         }
         return true;
@@ -108,7 +136,7 @@ public class PrefsActivity extends PreferenceActivity implements OnSharedPrefere
 
     @Override
     protected void onDestroy() {
-        ((YambaPDMApplication) getApplication()).getSharedPreferences().unregisterOnSharedPreferenceChangeListener(
+        app.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(
                 this );
         super.onDestroy();
     }
