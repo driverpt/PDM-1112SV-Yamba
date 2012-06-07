@@ -152,7 +152,6 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
         }
         
         private class TweetCursorAdapterViewBinder implements ViewBinder {
-            @Override
             public boolean setViewValue( View arg0, Cursor arg1, int arg2 ) {
                 switch( arg0.getId() ) {
                     case R.id.date:
