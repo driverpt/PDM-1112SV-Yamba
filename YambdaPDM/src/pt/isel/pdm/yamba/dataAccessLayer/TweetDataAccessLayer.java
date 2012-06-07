@@ -9,6 +9,7 @@ import pt.isel.pdm.yamba.model.YambaUser;
 import pt.isel.pdm.yamba.provider.contract.TweetContract;
 import winterwell.jtwitter.Twitter.Status;
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 
@@ -62,8 +63,8 @@ public class TweetDataAccessLayer {
         return null;
     }
     //Insert Methods
-    public static void insertTweet(ContentProvider provider, Status tweet){
-        provider.insert(TweetContract.CONTENT_URI, getContentValuesFromTwitterStatus(tweet));
+    public static void insertTweet(ContentResolver resolver, Status tweet){
+        resolver.insert(TweetContract.CONTENT_URI, getContentValuesFromTwitterStatus(tweet));
     }
     //TwitterStatus aux methods
     private static String[] getProjection(){
@@ -88,6 +89,7 @@ public class TweetDataAccessLayer {
         cv.put(TweetContract.USER,  tweet.getUser().getName());
         cv.put(TweetContract.TWEET, tweet.getText());
         cv.put(TweetContract.DATE,  tweet.createdAt.toLocaleString());
+        cv.put(TweetContract.TIMESTAMP, tweet.createdAt.getTime() );
         return cv;
     }
 }
