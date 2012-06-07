@@ -1,67 +1,63 @@
 package pt.isel.pdm.yamba;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import android.app.AlarmManager;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.StrictMode;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Button;
 
 import pt.isel.pdm.yamba.services.TimelineService;
-import pt.isel.pdm.yamba.services.WifiTimelineAutoUpdaterService;
 import winterwell.jtwitter.Twitter;
 
-public class YambaPDMApplication extends Application implements OnSharedPreferenceChangeListener, Runnable {
+public class YambaPDMApplication extends Application implements OnSharedPreferenceChangeListener {
     public Button                          lastSubmit;
     public Button                          lastRefresh;
     private Twitter                        twitter;
     private SharedPreferences              prefs;
 
-    private List< Twitter.Status >         timeline;
-    private OnYambaTimelineChangeListener  timelineChangedListener;
-
-    private WifiTimelineAutoUpdaterService timelineService;
-
-    private Runnable                       lastTimelineServiceRunnableToken;
     private Handler                        handler;
-    
-    public static final String             ACTION_YAMBA_TIMELINE_UPDATED = "pt.isel.pdm.yamba.TIMELINE_UPDATED";
+
+    private PendingIntent                  mScheduleTimelinePendingIntent;
+
+    public static final String            ACTION_YAMBA_TIMELINE_UPDATED = "pt.isel.pdm.yamba.TIMELINE_UPDATED";
 
     @Override
     public void onCreate() {
         initSharedPrefs();
         prefs.registerOnSharedPreferenceChangeListener( this );
         handler = new Handler();
-        
-        int applicationFlags = this.getApplicationInfo().flags;
-        boolean DEVELOPER_MODE = (applicationFlags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-        
-        if ( DEVELOPER_MODE ) {
-            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                    .detectDiskReads()
-                    .detectDiskWrites()
-                    .detectNetwork()   // or .detectAll() for all detectable problems
-                    .penaltyLog()
-                    .build());
-            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                    .detectLeakedSqlLiteObjects()
-                    //.detectLeakedClosableObjects()
-                    .penaltyLog()
-                    .penaltyDeath()
-                    .build());
-        }
 
+        int applicationFlags = this.getApplicationInfo().flags;
+        boolean DEVELOPER_MODE = ( applicationFlags & ApplicationInfo.FLAG_DEBUGGABLE ) != 0;
+
+        if ( DEVELOPER_MODE ) {
+            StrictMode.setThreadPolicy( new StrictMode.ThreadPolicy.Builder().detectDiskReads().detectDiskWrites()
+                    .detectNetwork() // or .detectAll() for all detectable problems
+                    .penaltyLog().build() );
+            StrictMode.setVmPolicy( new StrictMode.VmPolicy.Builder().detectLeakedSqlLiteObjects()
+            // .detectLeakedClosableObjects()
+                    .penaltyLog().penaltyDeath().build() );
+        }
         
         super.onCreate();
     }
 
+    private void initPendingIntent() {
+        Intent intent = new Intent(this, TimelineService.class);
+        intent.putExtra( TimelineService.OPERATION, TimelineService.MSG_UPDATE_TIMELINE );
+        mScheduleTimelinePendingIntent = PendingIntent.getService( this, 0, intent, 0 );
+    }
+    
     public Twitter getTwitter() {
         if ( twitter == null ) {
             initTwitter();
@@ -69,62 +65,34 @@ public class YambaPDMApplication extends Application implements OnSharedPreferen
         return twitter;
     }
 
-    public void setOnYambaTimelineChangeListener( OnYambaTimelineChangeListener listener ) {
-        timelineChangedListener = listener;
-    }
-
-    public List< Twitter.Status > getCurrentTimeline() {
-        return timeline;
-    }
-
-    // Synchronized is needed to avoid concurrency issues
-    public synchronized void setTimeline( List< Twitter.Status > newTimeline ) {
-        timeline = newTimeline;
-        if ( timelineChangedListener != null ) {
-            notifyOnYambaTimelineChangeListener();
-        }
-    }
-
-    private void notifyOnYambaTimelineChangeListener() {
-        Handler handler = new Handler( Looper.getMainLooper() );
-        handler.post( new Runnable() {
-            public void run() {
-                timelineChangedListener.onYambaTimelineChange();
-            }
-        } );
-    }
-
     public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
         if ( key.equals( PrefsActivity.KEY_USERNAME ) || key.equals( PrefsActivity.KEY_URL )
                 || key.equals( PrefsActivity.KEY_PASSWORD ) ) {
             twitter = null;
         }
+        
         if ( key.equals( PrefsActivity.KEY_TIMELINE_REFRESH ) ) {
             scheduleTimelineService();
         }
     }
 
     public void scheduleTimelineService() {
-        if ( lastTimelineServiceRunnableToken != null ) {
-            handler.removeCallbacks( lastTimelineServiceRunnableToken );
-        }
-        publishRunnableOnTimelineService( this );
-    }
-
-    public void publishRunnableOnTimelineService( Runnable runnable ) {
-        int updateInterval = Integer.parseInt( getSharedPreferences().getString( PrefsActivity.KEY_TIMELINE_REFRESH,
-                "0" ) );
-
-        if ( updateInterval == 0 ) {
-            return;
-        }
-
-        TimeUnit timeunit = TimeUnit.MILLISECONDS;
-        long delay = timeunit.convert( updateInterval, TimeUnit.MINUTES );
-
-        handler.postDelayed( runnable, delay );
+        initPendingIntent();
         
-        lastTimelineServiceRunnableToken = runnable;
+        AlarmManager alarmManager = ( AlarmManager ) getSystemService( ALARM_SERVICE );
+        alarmManager.cancel( mScheduleTimelinePendingIntent );
+
+        SharedPreferences prefs = getSharedPreferences();
+        boolean isToBeUpdated = prefs.getBoolean( PrefsActivity.KEY_AUTOMATIC_TIMELINE_UPDATE, false );
+        if( isToBeUpdated ) {
+            int timelineInterval = Integer.parseInt( prefs.getString( PrefsActivity.KEY_TIMELINE_REFRESH, "0" ) );
+            if ( timelineInterval > 0 ) {
+                TimeUnit converter = TimeUnit.MILLISECONDS;
+                long convertedMinutesToMillis = converter.convert( timelineInterval, TimeUnit.MINUTES );
+                alarmManager.setRepeating( AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(), convertedMinutesToMillis, mScheduleTimelinePendingIntent );
+                Log.d( this.getClass().getSimpleName(), String.format( "Alarm set every %d minutes", timelineInterval ));
+            }
+        }
     }
 
     public SharedPreferences getSharedPreferences() {
@@ -143,25 +111,4 @@ public class YambaPDMApplication extends Application implements OnSharedPreferen
         twitter.setAPIRootUrl( url );
     }
 
-    public void run() {
-        Intent intent = new Intent( this, TimelineService.class );
-        intent.putExtra( TimelineService.OPERATION, TimelineService.MSG_UPDATE_TIMELINE );
-        startService( intent );
-    }
-
-    public List< Twitter.Status > getTimeline() {
-        return timeline;
-    }
-
-    public void startTimelineAutomaticUpdates() {
-        if ( timelineService == null )
-            timelineService = new WifiTimelineAutoUpdaterService();
-        Intent intent = new Intent( this, WifiTimelineAutoUpdaterService.class );
-        startService( intent );
-    }
-
-    public void stopTimelineAutomaticUpdates() {
-        WifiTimelineAutoUpdaterService.serviceInstance.stopSelf();
-
-    }
 }
