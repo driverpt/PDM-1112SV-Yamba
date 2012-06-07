@@ -7,14 +7,15 @@ import java.util.List;
 import pt.isel.pdm.yamba.model.TweetToPost;
 import pt.isel.pdm.yamba.provider.contract.TweetPostContract;
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 
 public class TweetToPostDataAccessLayer {
 
     //GetMethods
-    public static List<TweetToPost> getTweetsToPost(ContentProvider provider){
-        Cursor cursor = provider.query(
+    public static List<TweetToPost> getTweetsToPost(ContentResolver resolver){
+        Cursor cursor = resolver.query(
                 TweetPostContract.CONTENT_URI,
                 getProjection(),
                 null,
@@ -32,8 +33,8 @@ public class TweetToPostDataAccessLayer {
     }
     
     //Insert Methods
-    public static void insertTweetToPost(ContentProvider provider, TweetToPost tweet){
-        provider.insert(TweetPostContract.CONTENT_URI, getContentValuesFromTweetToPost(tweet));
+    public static void insertTweetToPost(ContentResolver resolver, TweetToPost tweet){
+        resolver.insert(TweetPostContract.CONTENT_URI, getContentValuesFromTweetToPost(tweet));
     }
     
     //Aux methods
