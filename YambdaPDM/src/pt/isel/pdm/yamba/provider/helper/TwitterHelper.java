@@ -10,7 +10,7 @@ import android.util.Log;
 
 public class TwitterHelper extends SQLiteOpenHelper {
 
-    static final String LOGGER_TAG        = "PDM";
+    static final String LOGGER_TAG = "PDM";
     static final String DB_NAME    = "twitter";
     static final int    DB_VERSION = 1;
 
