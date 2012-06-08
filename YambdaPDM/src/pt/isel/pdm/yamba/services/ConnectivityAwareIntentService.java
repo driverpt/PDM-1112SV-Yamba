@@ -2,60 +2,46 @@ package pt.isel.pdm.yamba.services;
 
 import android.app.IntentService;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+
+import pt.isel.pdm.yamba.ConnectivityAwareBroadcastReceiver;
+import pt.isel.pdm.yamba.YambaPDMApplication;
 
 public abstract class ConnectivityAwareIntentService extends IntentService {
 
     private static final String LOGGER_TAG       = "ConnectivityAware Service";
 
-    private volatile boolean    mHasConnectivity = false;
-    private ConnectivityManager mConnManager;
-    protected BroadcastReceiver mConnectivityReceiver;
-
-    private class ConnectivityAwareBroadcastReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive( Context context, Intent intent ) {
-            boolean hasNetwork = !intent.getBooleanExtra( ConnectivityManager.EXTRA_NO_CONNECTIVITY, false );
-            if ( hasNetwork ) {
-                NetworkInfo networkInfo = mConnManager.getActiveNetworkInfo();
-                if( hasNetworkInfoAndConnectivityAvailable( networkInfo ) ) {
-                    if( !mHasConnectivity ) {
-                        updateNetworkInfo( networkInfo );
-                        onConnectivityAvailable();
-                    }
-                }
-            } else {
-                mHasConnectivity = false;
-            }
-        }
-    }
-
-    private final IntentFilter mConnectivityReceiverFilter = new IntentFilter( ConnectivityManager.CONNECTIVITY_ACTION );
+    protected ConnectivityAwareBroadcastReceiver mConnectivityReceiver;
 
     protected ConnectivityAwareIntentService( String name ) {
         super( name );
-        mConnectivityReceiver = new ConnectivityAwareBroadcastReceiver();
+        mConnectivityReceiver = new ConnectivityAwareBroadcastReceiver() {
+            
+            @Override
+            public void onPostConnectivityChange() {
+                if ( hasConnectivity() ) {
+                    onConnectivityAvailable();
+                } else {
+                    onConnectivityUnavailable();
+                }
+                
+            }
+            
+            @Override
+            public boolean onCheckConnectivityChange( NetworkInfo networkInfo ) {
+                return ( networkInfo != null && networkInfo.isConnected() );
+            }
+        };
     }
 
-    protected boolean hasConnectivity() {
-        return mHasConnectivity;
-    }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        mConnManager = (ConnectivityManager) getSystemService( Context.CONNECTIVITY_SERVICE );
-
-        NetworkInfo networkInfo = mConnManager.getActiveNetworkInfo();
-        updateNetworkInfo(networkInfo);
-
-        Intent intent = registerReceiver( mConnectivityReceiver, mConnectivityReceiverFilter );
+        Intent intent = registerReceiver( mConnectivityReceiver, ( (YambaPDMApplication) getApplication() ).getConnectivityIntentFilter() );
         Log.d( LOGGER_TAG, String.format( "Receiver Registered, Intent=%s", intent ) );
     }
 
@@ -64,16 +50,9 @@ public abstract class ConnectivityAwareIntentService extends IntentService {
         super.onDestroy();
         unregisterReceiver( mConnectivityReceiver );
     }
-
-    private void updateNetworkInfo(NetworkInfo networkInfo) {
-        mHasConnectivity = hasNetworkInfoAndConnectivityAvailable( networkInfo );
-    }
     
-    private boolean hasNetworkInfoAndConnectivityAvailable( NetworkInfo networkInfo ) {
-        return ( networkInfo != null 
-               && networkInfo.getType() == ConnectivityManager.TYPE_WIFI 
-               && networkInfo.isConnected()
-               );
+    protected boolean hasConnectivity() {
+        return mConnectivityReceiver.hasConnectivity();
     }
 
     protected void onConnectivityAvailable() {
