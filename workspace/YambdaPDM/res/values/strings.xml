@@ -35,7 +35,7 @@
     <string name="timeline_refresh_interval_sum">The timespan between automatic updates to the timeline</string>
     <string name="timeline_refresh_interval_sum_filled">The timeline refreshes every %d minutes</string>
     <string name="menu_userinfo">User Information</string>
-    <string name="act_userinfo_title">My information</string>
+    <string name="act_userinfo_title">User Information</string>
     <string name="act_userinfo_pd_title">W8TABIT!</string>
     <string name="act_userinfo_pd_text">Loading user information. Please wait.</string>
     <string name="friendsDescription">Friends</string>
@@ -46,5 +46,5 @@
     <string name="timeline_context_menu_sendbyemail">Send by email</string>
     <string name="timelinectxmenu_title">Do what with tweet?</string>
     <string name="timelineitem_emailsubject">Check out this tweet!</string>
-    
+    <string name="menu_clear_cache">Clear Cache</string>
     </resources>

@@ -20,6 +20,15 @@
         android:icon="@android:drawable/ic_menu_close_clear_cancel"
         android:title="@string/terminate">
     </item>
-    <item android:id="@+id/userinfo" android:title="@string/menu_userinfo" android:icon="@android:drawable/ic_menu_info_details"></item>
-
+    <item 
+        android:id="@+id/userinfo" 
+        android:title="@string/menu_userinfo" 
+        android:icon="@android:drawable/ic_menu_info_details">
+    </item>
+    <item 
+        android:id="@+id/clearCache" 
+        android:title="@string/menu_clear_cache" 
+        android:icon="@android:drawable/ic_menu_delete">
+    </item>
+    
 </menu>
