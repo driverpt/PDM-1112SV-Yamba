@@ -20,7 +20,7 @@ public class TweetToPostDataAccessLayer {
                 getProjection(),
                 null,
                 null,
-                null);
+                String.format("%s DESC", TweetPostContract.TIMESTAMP ) );
         List<TweetToPost> toReturn = new LinkedList<TweetToPost>();
         if(cursor != null && cursor.getCount() > 0){
             while (cursor.moveToNext()) {
