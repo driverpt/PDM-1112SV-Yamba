@@ -81,7 +81,7 @@ public class TweetDataAccessLayer {
         String tweet = cursor.getString(cursor.getColumnIndex(TweetContract.TWEET));
         Date date = Date.valueOf(cursor.getString(cursor.getColumnIndex(TweetContract.DATE)));
         YambaUser user = UserDataAccessLayer.getUser(provider, username);
-        return new YambaPost(id,user, date, tweet);
+        return new YambaPost(id, user.getUsername(), date, tweet);
     }
     private static ContentValues getContentValuesFromTwitterStatus(Status tweet){
         ContentValues cv = new ContentValues();
