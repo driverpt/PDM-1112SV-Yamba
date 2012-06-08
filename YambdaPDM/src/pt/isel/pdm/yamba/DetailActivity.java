@@ -8,20 +8,22 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import pt.isel.pdm.yamba.services.UserInfoService;
+
 import pt.isel.pdm.yamba.model.YambaPost;
 
-public class DetailActivity extends Activity {
+public class DetailActivity extends Activity implements OnClickListener {
 
     private TextView  tweetView;
     private TextView  userView;
     private TextView  dateView;
     private TextView  idView;
-    private TextView  friendsView;
-    private TextView  followersView;
-    private TextView  postsView;
+
     private ImageView userImage;
 
     @Override
@@ -35,12 +37,12 @@ public class DetailActivity extends Activity {
         tweetView = (TextView) findViewById( R.id.tweetTextView );
         userView = (TextView) findViewById( R.id.userTextView );
         dateView = (TextView) findViewById( R.id.dateTextView );
-        friendsView = (TextView) findViewById( R.id.friendsView );
-        followersView = (TextView) findViewById( R.id.followersView );
-        postsView = (TextView) findViewById( R.id.postsView );
+
         userImage = (ImageView) findViewById( R.id.tweetDetailUserImage );
 
         updateUi( getIntent() );
+        
+        userImage.setOnClickListener( this );
     }
 
     @Override
@@ -58,10 +60,7 @@ public class DetailActivity extends Activity {
         String tweet = tStatus.getTweet();
         Date tweetDate = tStatus.getDate();
 
-        String username = tStatus.getUser().getUsername();
-        int friendsCount = tStatus.getUser().getFriendsCount();
-        int followersCount = tStatus.getUser().getFollowersCount();
-        int postsCount = tStatus.getUser().getPostsCount();
+        String username = tStatus.getUser();
 
         DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm" );
 
@@ -69,8 +68,14 @@ public class DetailActivity extends Activity {
         tweetView.setText( tweet );
         userView.setText( username );
         dateView.setText( dateFormat.format( tweetDate ) );
-        friendsView.setText( "" + friendsCount );
-        followersView.setText( "" + followersCount );
-        postsView.setText( "" + postsCount );        
+       
+    }
+
+    @Override
+    public void onClick( View v ) {
+        String screenName = userView.getText().toString();
+        Intent intent = new Intent( this, UserInfoActivity.class );
+        intent.putExtra( UserInfoService.USER_SCREEN_NAME, screenName );
+        startActivity( intent );
     }
 }
