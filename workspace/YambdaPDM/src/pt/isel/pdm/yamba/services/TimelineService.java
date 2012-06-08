@@ -14,24 +14,28 @@ import android.widget.Toast;
 
 import pt.isel.pdm.yamba.YambaPDMApplication;
 import pt.isel.pdm.yamba.provider.contract.TweetContract;
+import winterwell.jtwitter.Status;
 import winterwell.jtwitter.Twitter;
 import winterwell.jtwitter.TwitterException;
 
 public class TimelineService extends ConnectivityAwareIntentService {
 
-    private static final String LOGGER_TAG            = "Timeline Service";
+    private static final String   LOGGER_TAG            = "Timeline Service";
 
-    public static final int     TIMELINE_UPDATE_OK    = 0;
-    public static final int     TIMELINE_UPDATE_ERROR = -2;
+    public static final int       TIMELINE_UPDATE_OK    = 0;
+    public static final int       TIMELINE_UPDATE_ERROR = -2;
 
-    public static final int     MSG_UPDATE_TIMELINE   = 1;
+    public static final int       MSG_UPDATE_TIMELINE   = 1;
+    public static final int       MSG_CLEAR_CACHE       = 2;
 
-    public static final int     INVALID_OPERATION     = -1;
-    public static final String  OPERATION             = "Timeline Operation";
+    public static final int       INVALID_OPERATION     = -1;
+    public static final String    OPERATION             = "Timeline Operation";
 
-    private Handler             mainThreadHandler;
+    private LocalBroadcastManager localBcast;
 
-    private Intent              mTimelineUpdateIntent;
+    private Handler               mainThreadHandler;
+
+    private Intent                mTimelineUpdateIntent;
 
     public TimelineService() {
         super( "TimelineService" );
@@ -42,6 +46,18 @@ public class TimelineService extends ConnectivityAwareIntentService {
         super.onCreate();
         Log.d( LOGGER_TAG, "onCreate()" );
         mainThreadHandler = new Handler();
+        localBcast = LocalBroadcastManager.getInstance( this );
+    }
+
+    private void initTimelineUpdateIntent() {
+        if ( mTimelineUpdateIntent == null ) {
+            mTimelineUpdateIntent = new Intent();
+            mTimelineUpdateIntent.setAction( YambaPDMApplication.ACTION_YAMBA_TIMELINE_UPDATED );
+        }
+    }
+
+    private void sendTimelineUpdateBroadcast() {
+        localBcast.sendBroadcast( mTimelineUpdateIntent );
     }
 
     @Override
@@ -49,10 +65,12 @@ public class TimelineService extends ConnectivityAwareIntentService {
         int operation = intent.getIntExtra( OPERATION, INVALID_OPERATION );
         Log.d( LOGGER_TAG, String.format( "onHandleIntent() called, operation = %d", operation ) );
 
-        YambaPDMApplication app = (YambaPDMApplication) getApplication();
+        YambaPDMApplication app = ( YambaPDMApplication ) getApplication();
 
         switch ( operation ) {
-            case MSG_UPDATE_TIMELINE: {
+            case MSG_CLEAR_CACHE:
+                getContentResolver().delete( TweetContract.CONTENT_URI, null, null );
+            case MSG_UPDATE_TIMELINE:
                 try {
                     final Twitter twitter = app.getTwitter();
                     ContentResolver contentResolver = getContentResolver();
@@ -70,11 +88,11 @@ public class TimelineService extends ConnectivityAwareIntentService {
                         twitter.setSinceId( lastId );
                     }
 
-                    final List< Twitter.Status > twitterStatus = twitter.getHomeTimeline();
+                    final List< Status > twitterStatus = twitter.getPublicTimeline();
 
-                    for ( Twitter.Status status : twitterStatus ) {
+                    for ( Status status : twitterStatus ) {
                         ContentValues values = new ContentValues();
-                        values.put( TweetContract._ID, status.getId() );
+                        values.put( TweetContract._ID, status.getId().longValue() );
                         values.put( TweetContract.DATE, status.getCreatedAt().toString() );
                         values.put( TweetContract.TIMESTAMP, status.getCreatedAt().getTime() );
                         values.put( TweetContract.USER, status.getUser().getScreenName() );
@@ -82,36 +100,38 @@ public class TimelineService extends ConnectivityAwareIntentService {
                         getContentResolver().insert( TweetContract.CONTENT_URI, values );
                     }
 
-                    LocalBroadcastManager localBcast = LocalBroadcastManager.getInstance( this );
-                    if ( mTimelineUpdateIntent == null ) {
-                        mTimelineUpdateIntent = new Intent();
-                        mTimelineUpdateIntent.setAction( YambaPDMApplication.ACTION_YAMBA_TIMELINE_UPDATED );
-                    }
-                    localBcast.sendBroadcast( mTimelineUpdateIntent );
+                    initTimelineUpdateIntent();
+
+                    mTimelineUpdateIntent.putExtra( OPERATION, TIMELINE_UPDATE_OK );
+
+                    sendTimelineUpdateBroadcast();
+
+                    return;
+
                 } catch ( final TwitterException e ) {
                     Log.e( LOGGER_TAG, "Twitter Error ocurred", e );
                     mainThreadHandler.post( new Runnable() {
                         public void run() {
-                            Toast.makeText( TimelineService.this
-                                          , String.format( "Twitter Error: %s", e.getMessage() )
-                                          , Toast.LENGTH_LONG
-                                          ).show();
+                            Toast.makeText( TimelineService.this, String.format( "Twitter Error: %s", e.getMessage() ),
+                                    Toast.LENGTH_LONG ).show();
                         }
-                    });
+                    } );
                 } catch ( final Exception e ) {
                     Log.e( LOGGER_TAG, "Exception Occurred on updating timeline", e );
                     mainThreadHandler.post( new Runnable() {
                         public void run() {
-                            Toast.makeText( TimelineService.this
-                                          , String.format( "Error while updating timeline: %s", e.getMessage() )
-                                          , Toast.LENGTH_LONG 
-                                          ).show();
+                            Toast.makeText( TimelineService.this,
+                                    String.format( "Error while updating timeline: %s", e.getMessage() ),
+                                    Toast.LENGTH_LONG ).show();
                         }
                     } );
                 }
                 break;
-            }
         }
+
+        initTimelineUpdateIntent();
+        mTimelineUpdateIntent.putExtra( OPERATION, TIMELINE_UPDATE_ERROR );
+        sendTimelineUpdateBroadcast();
     }
 
     @Override

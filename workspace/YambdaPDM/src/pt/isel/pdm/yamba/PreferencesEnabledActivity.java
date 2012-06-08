@@ -8,6 +8,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import pt.isel.pdm.yamba.services.TimelineService;
+
+import pt.isel.pdm.yamba.services.UserInfoService;
+
 public abstract class PreferencesEnabledActivity extends Activity {
 
     protected SharedPreferences prefs;
@@ -63,8 +67,17 @@ public abstract class PreferencesEnabledActivity extends Activity {
             }
             case R.id.userinfo: {
                 Intent intent = new Intent( this, UserInfoActivity.class );
+                YambaPDMApplication app = ( YambaPDMApplication ) getApplication();
+                String screenName = app.getTwitter().getScreenName();
                 intent.addFlags( Intent.FLAG_ACTIVITY_NO_HISTORY );
+                intent.putExtra( UserInfoService.USER_SCREEN_NAME, screenName );
                 startActivity( intent );
+                break;
+            }
+            case R.id.clearCache: {
+                Intent intent = new Intent( this, TimelineService.class );
+                intent.putExtra( TimelineService.OPERATION, TimelineService.MSG_CLEAR_CACHE );
+                startService( intent );
                 break;
             }
         }
