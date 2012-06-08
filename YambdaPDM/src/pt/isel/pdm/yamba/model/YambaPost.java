@@ -5,17 +5,15 @@ import java.util.Date;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import winterwell.jtwitter.Twitter.User;
-
 public class YambaPost implements Parcelable{
     
     public static final String IDENTIFIER = "TWITTER.STATUS_PARCELABLE";    
     private long _id;
-    private YambaUser _user;
+    private String _user;
     private Date _date;
     private String _tweet;
     
-    public YambaPost( long id, YambaUser user, Date date, String tweet){//, URI photoUri, int friendsCount, int followersCount, int postsCount) {
+    public YambaPost( long id, String user, Date date, String tweet){//, URI photoUri, int friendsCount, int followersCount, int postsCount) {
         _id = id;
         _user = user;
         _date = date;
@@ -28,7 +26,7 @@ public class YambaPost implements Parcelable{
     public Date getDate() {
         return _date;
     }
-    public YambaUser getUser() {
+    public String getUser() {
         return _user;
     }
     public String getTweet() {
@@ -45,7 +43,7 @@ public class YambaPost implements Parcelable{
         dest.writeLong(_id);
         dest.writeString(_date.toString());
         dest.writeString(_tweet);
-        dest.writeParcelable(_user, 0); // Twitter.User is not Parcelable
+        dest.writeString(_user); // Twitter.User is not Parcelable
     }
     public static final Parcelable.Creator<YambaPost> CREATOR = new Parcelable.Creator<YambaPost>() {
         public YambaPost createFromParcel(Parcel in) {
@@ -60,7 +58,7 @@ public class YambaPost implements Parcelable{
         _id = in.readLong();
         _date = new Date(in.readString());
         _tweet = in.readString();
-        _user = in.readParcelable( User.class.getClassLoader());
+        _user = in.readString();
     }
     public String getDataForEmail() {
         return String.format("user: %s\ndate: %s\ntweet: %s\n", getUser(), getDate().toString(), getTweet()).toString();
