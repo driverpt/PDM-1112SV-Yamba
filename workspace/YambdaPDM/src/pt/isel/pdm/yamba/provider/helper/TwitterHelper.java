@@ -12,7 +12,7 @@ public class TwitterHelper extends SQLiteOpenHelper {
 
     static final String LOGGER_TAG = "PDM";
     static final String DB_NAME    = "twitter";
-    static final int    DB_VERSION = 1;
+    static final int    DB_VERSION = 2;
 
     public TwitterHelper( Context ctx ) {
         super( ctx, DB_NAME, null, DB_VERSION );
@@ -27,7 +27,7 @@ public class TwitterHelper extends SQLiteOpenHelper {
     public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
         dropAllTables( db );
         Log.d( LOGGER_TAG, "onUpdated" );
-        onCreate( db );
+        createAllTables( db );
     }
 
     // Create methods
@@ -56,9 +56,10 @@ public class TwitterHelper extends SQLiteOpenHelper {
     }
 
     private void createTweetToPostTable( SQLiteDatabase db ) {
-        String columns = TweetPostContract._ID   + " integer primary key autoincrement" 
-                + ", " + TweetPostContract.DATE  + " datetime not null" 
-                + ", " + TweetPostContract.TWEET + " int not null";
+        String columns = TweetPostContract._ID       + " integer primary key autoincrement" 
+                + ", " + TweetPostContract.DATE      + " datetime not null" 
+                + ", " + TweetPostContract.TWEET     + " int not null"
+                + ", " + TweetPostContract.TIMESTAMP + " int not null";
         createTable( db, TweetPostContract.TABLE, columns );
     }
 

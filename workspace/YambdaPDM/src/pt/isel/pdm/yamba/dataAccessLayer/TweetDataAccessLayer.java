@@ -7,7 +7,7 @@ import java.util.List;
 import pt.isel.pdm.yamba.model.YambaPost;
 import pt.isel.pdm.yamba.model.YambaUser;
 import pt.isel.pdm.yamba.provider.contract.TweetContract;
-import winterwell.jtwitter.Twitter.Status;
+import winterwell.jtwitter.Status;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -85,7 +85,7 @@ public class TweetDataAccessLayer {
     }
     private static ContentValues getContentValuesFromTwitterStatus(Status tweet){
         ContentValues cv = new ContentValues();
-        cv.put(TweetContract._ID,   tweet.getId());
+        cv.put(TweetContract._ID,   tweet.getId().longValue() );
         cv.put(TweetContract.USER,  tweet.getUser().getName());
         cv.put(TweetContract.TWEET, tweet.getText());
         cv.put(TweetContract.DATE,  tweet.createdAt.toLocaleString());
