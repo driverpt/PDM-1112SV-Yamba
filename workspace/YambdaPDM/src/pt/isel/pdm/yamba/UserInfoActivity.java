@@ -32,7 +32,7 @@ public class UserInfoActivity extends Activity implements ServiceConnection {
     // private static Bitmap picture;
 
     private IUserInfoService    mRemoteInterface;
-    private volatile boolean    mConnected;
+    private volatile boolean  mConnected;
     private Intent              intent;
 
     private TextView            screenNameView;
@@ -42,6 +42,8 @@ public class UserInfoActivity extends Activity implements ServiceConnection {
     private TextView            postCountView;
     private ProgressDialog      pd;
 
+    private String              screenName;
+    
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
@@ -60,6 +62,8 @@ public class UserInfoActivity extends Activity implements ServiceConnection {
         followersCountView = (TextView) findViewById( R.id.textViewFollowersCount );
         favouritesCountView = (TextView) findViewById( R.id.textViewFavoresCount );
         postCountView = (TextView) findViewById( R.id.textViewStatusesCount );
+        
+        screenName = getIntent().getStringExtra( UserInfoService.USER_SCREEN_NAME );        
     }
 
     @Override
@@ -67,6 +71,7 @@ public class UserInfoActivity extends Activity implements ServiceConnection {
         super.onResume();
         if ( intent == null ) {
             intent = new Intent( this, UserInfoService.class );
+            intent.putExtra( UserInfoService.USER_SCREEN_NAME, screenName );
         }
 
         bindService( intent, this, Context.BIND_AUTO_CREATE );
