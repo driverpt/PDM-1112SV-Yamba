@@ -1,0 +1,65 @@
+\documentclass[a4paper]{paper}
+\usepackage{enumerate}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{fullpage}
+\usepackage[portuguese]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage[pdftex]{graphicx}
+
+	\title{Programação em Dispositivos Móveis \\* \emph{Etapa 3}}
+	\author
+	{
+		Estudantes:\\
+			André Domingos, 24503, 24503@alunos.isel.pt (\textbf{não} apresenta)\\
+			Hugo Ferreira, 32983, 32983@alunos.isel.pt (apresenta)\\
+			Luís Duarte, 30713, 30713@alunos.isel.pt (apresenta)
+	}
+	\date{13 de Maio de 2012}
+	 
+	
+	\begin{document}
+		
+	%% Creates the title for the document based on input data at beginning of file
+	\maketitle
+	
+		% Palavras chave
+		{\bf keywords:} \textit{Java, Android, Activity,Yamba, }
+	
+		%% Introdução %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		\section{Introdução}
+		\input{introducao/intro}
+		
+		%% Decisões de implementação %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		\section{Decisões de implementação}
+		
+		%% Novos requisitos
+		
+		%% activity_userInfo.tex
+		%% general_requirements.tex
+		%% service_statuspdate.tex
+		%% service_timeline.tex
+		%% service_userinfopull.tex
+
+		\input{decisoes_implementacao/general_requirements}
+		
+		%%IntentService
+		\input{decisoes_implementacao/intent_service}
+		
+		%% StatusUpload
+		\input{decisoes_implementacao/service_statuspdate}
+		
+		%% TimelinePull
+		\input{decisoes_implementacao/service_timeline}
+		
+		%% UserInfo
+		\input{decisoes_implementacao/service_userinfopull}
+		
+		\input{decisoes_implementacao/activity_userInfo}
+		%\subsection{\textit{Tasks} e modos de lançamento}
+		%% Descrição do Projecto %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+		\section{Conclusões}
+		\input{conclusao/conclusao}
+	
+	\end{document}

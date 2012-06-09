@@ -1,0 +1,13 @@
+\subsection{Actividade \textit{UserInfo}}
+
+A actividade \textit{UserInfo} é responsável por apresentar a informação relativa ao utilizador e implementa a interface \texttt{ServiceConnection}. Esta informação é obtida através do serviço \texttt{UserInfoService}.
+
+%Flag for bindService(Intent, ServiceConnection, int): automatically create the service as long as the binding exists. Note that while this will create the service, its onStartCommand(Intent, int, int) method will still only be called due to an explicit call to startService(Intent). Even without that, though, this still provides you with access to the service object while the service is created. 
+
+O \textit{bind} ao serviço é efectuado aquando da invocação do evento \texttt{onResume}, com recurso ao método \texttt{bindService} e com a \textit{flag} \texttt{BIND\_AUTO\_CREATE}, que indica que o serviço deve ser criado automaticamente a partir do momento que há um \textit{bind} definido. Note-se que embora o serviço seja criado, o evento \texttt{onStartCommand} apenas é chamado numa invocação explícita a \texttt{startService}. 
+
+Assim que a actividade arranca é também mostrado um diálogo de progresso para garantir que o utilizador tem percepção que há uma operação a decorrer em \textit{background}.
+
+A invocação ao serviço é efectuada assim que é disparado o evento \texttt{onServiceConnected}. A implementação de \texttt{IUserInfoService} que permite invocar os métodos remotos é então obtida e as invocações necessárias são executadas em uma \textit{thread} auxiliar. Assim que são obtidos todos os dados necessários para a actualização da vista com os dados de utilizador obtidos é adicionada uma nova mensagem na \textit{queue} da \textit{ui thread} para se fechar o diálogo de progresso e actualizar a informação com os dados obtidos.
+
+

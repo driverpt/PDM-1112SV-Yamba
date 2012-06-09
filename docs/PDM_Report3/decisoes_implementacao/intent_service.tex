@@ -1,0 +1,26 @@
+\subsection{\texttt{IntentService}}
+\label{sec:intent}
+Para implementar um \textit{Started Service} podemos seguir duas abordagens:
+\begin{itemize}
+	\item Implementar um serviço que estenda de \texttt{Service} e que implemente a interface \texttt{Runnable};
+	\item Implementar um serviço que estenda de \texttt{IntentService}.
+\end{itemize}
+
+No trabalho apresentado é necessário criar dois serviços do tipo \textit{Started Service}:
+\begin{itemize}
+	\item \texttt{StatusUpload} \ref{sec:statusUpload}
+	\item \texttt{TimelinePull} \ref{sec:timelinePull}
+\end{itemize}
+
+Para implementar estes serviços, do tipo \textit{Started Service} foi necessário estender de \texttt{IntentService}.
+
+Um \texttt{IntentService} permite criar um \textit{Started Service} que já é um \texttt{Runnable}, ou seja, o código já é executado assincronamente e o programador não tem que se preocupar com aspectos de implementação/execução de uma classe do tipo \texttt{Runnable}.
+
+
+Como tal, ao implementar um serviço que estenda de \texttt{IntentService} é necessário ter os seguintes aspectos em consideração:
+\begin{itemize}
+	\item Cada \texttt{Intent} recebido em \texttt{onStartCommand()} é colocado numa fila;
+	\item A \textit{worker thread} encaminha os \textit{intent}, um de cada vez, para \texttt{onHandleIntent()};
+	\item O serviço é terminado quando a fila fica vazia;
+	\item O método \texttt{onBind()} retorna \texttt{null}.
+\end{itemize}

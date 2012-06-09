@@ -1,0 +1,7 @@
+\subsection{Serviço \texttt{UserInfoService}}
+
+O serviço \texttt{UserInfoService} obtém a informação relativa ao utilizador e está hospedado num processo exclusivamente derivado para este propósito. Para possibilitar este requisito utiliza-se um serviço do tipo \textit{bound service}. 
+
+Ao declarar o serviço no manifesto da aplicação, indica-se que o mesmo deve correr num processo diferente através da propriedade \texttt{android:process}, bastando apenas indicar qual o nome do processo. No caso da aplicação descrita neste documento esse nome é \texttt{pt.isel.pdm.yamba.UserInfoService}.
+
+Para o cliente interagir com o serviço do tipo \textit{bound} é declarado um ficheiro do tipo \textit{Android Interface Definition Languange} que define a interface de interacção com o serviço. O serviço apenas é criando aquando da execução da actividade \texttt{UserInfoActivity}. Note-se que um serviço deste tipo tipicamente apenas está a ser executado em \textit{background} enquanto serve uma aplicação e não por tempo indefinido.
