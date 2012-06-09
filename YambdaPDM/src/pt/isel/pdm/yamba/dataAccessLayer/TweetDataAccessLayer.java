@@ -22,10 +22,12 @@ public class TweetDataAccessLayer {
                 getProjection(),
                 String.format("%s = ?", TweetContract._ID),
                 new String[]{id+""},null);
-
+        
         if(cursor != null && cursor.getCount() == 1){
             cursor.moveToNext();
-            return getTwitterStatusFromCursor(provider,cursor);
+            YambaPost post = getTwitterStatusFromCursor(provider,cursor);
+            cursor.close();
+            return post;
         }
         return null;
     }
@@ -41,6 +43,7 @@ public class TweetDataAccessLayer {
             while (cursor.moveToNext()) {
                 toReturn.add(getTwitterStatusFromCursor(provider,cursor));
             }
+            cursor.close();
             return toReturn;
         }
         return null;
@@ -58,6 +61,7 @@ public class TweetDataAccessLayer {
             while (cursor.moveToNext()) {
                 toReturn.add(getTwitterStatusFromCursor(provider,cursor));
             }
+            cursor.close();
             return toReturn;
         }
         return null;
