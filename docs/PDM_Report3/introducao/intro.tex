@@ -1,4 +1,4 @@
-Na terceira etapa do trabalho prático da disciplina de Programação em Dispositivos Móveis procede-se à optimização da aplicação desenvolvida nas duas etapas anteriores com recurso aos seguintes componentes/\textit{features} da plataforma \textit{Android}:
+Na terceira etapa do trabalho prático da disciplina de Programação em Dispositivos Móveis pretende-se optimizar a aplicação desenvolvida nas duas etapas anteriores com recurso aos seguintes componentes/\textit{features} da plataforma \textit{Android}:
 \begin{itemize}
 	\item Armazenamento em memória persistente com recurso à base de dados \textit{SQLite};
 	\item Monitorização de conectividade do equipamento (e tipo de conectividade, nomeadamente \textit{WiFi});
@@ -7,4 +7,11 @@ Na terceira etapa do trabalho prático da disciplina de Programação em Dispositiv
 	% A descomentar se o Luis implementar \Utilização de \textit{Widgets};
 \end{itemize}
 
-Para proceder a estas optimizações foram efectuadas as seguintes alterações:
+Para proceder a estas optimizações são efectuadas as seguintes alterações ao trabalho:
+
+\begin{itemize}
+	\item A lista de mensagens mostradas no \textit{timeline} é guardada numa base de dados \textit{SQLite}. Na versão anterior a lista era sempre construída a partir de objectos em memória volátil;
+	\item Existe agora a possibilidade de fazer submissão de mensagens mesmo que não exista conectividade na aplicação. Estas mensagens ficam também numa base de dados. Aquando da obtenção de conectividade são publicadas no servidor;
+	\item Para partilhar uma mensagem através de \textit{email} o utilizador apenas precisa de efectuar um toque prolongado na lista de \textit{tweets}, aparecendo-lhe um menu contextual para o efeito, ou no detalhe de um \textit{tweet} com recurso ao menu da actividade.	
+\end{itemize}
+
