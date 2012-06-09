@@ -1,4 +1,4 @@
-\subsection{Partilha de \textit{tweets} por \textit{email}}
+\section{Partilha de \textit{tweets} por \textit{email}}
 
 A implementação da partilha de \textit{tweets} por email é efectuada através da utilização de um menu definido nos recursos da aplicação, \texttt{timeline\_context\_menu}.
 
@@ -6,6 +6,6 @@ Está presente como menu de contexto na actividade que contém a \textit{timeline}
 
 O toque na opção \textit{Send by email} promove a criação de um novo \textit{intent} com a acção \texttt{ACTION\_SEND}, passado ao método \texttt{startActivity}. Para limitar as opções de envio no diálogo mostrado pelo sistema operativo a aplicativos para \textit{e-mail} declara-se o tipo como sendo \textit{message/rfc822}. 
 
-\subsubsection{Alterações necessárias para implementação do menu}
+\subsection{Alterações necessárias para implementação do menu}
 A implementação do menu na actividade da \textit{timeline} é feita com recurso à implementação dos métodos \texttt{onCreateContextMenu} e \textit{onContextItemSelected}, sendo o último invocado quando é efectuado o toque prolongado na lista. A associação da \texttt{ListView} contentora de \textit{tweets} ao menu do contexto é efectuada no método \texttt{onCreate}, através do método \texttt{registerForContextMenu}.
 
