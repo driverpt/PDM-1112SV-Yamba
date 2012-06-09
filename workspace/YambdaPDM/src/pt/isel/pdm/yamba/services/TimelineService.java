@@ -2,6 +2,11 @@ package pt.isel.pdm.yamba.services;
 
 import java.util.List;
 
+import pt.isel.pdm.yamba.YambaPDMApplication;
+import pt.isel.pdm.yamba.provider.contract.TweetContract;
+import winterwell.jtwitter.Status;
+import winterwell.jtwitter.Twitter;
+import winterwell.jtwitter.TwitterException;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -11,12 +16,6 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
-
-import pt.isel.pdm.yamba.YambaPDMApplication;
-import pt.isel.pdm.yamba.provider.contract.TweetContract;
-import winterwell.jtwitter.Status;
-import winterwell.jtwitter.Twitter;
-import winterwell.jtwitter.TwitterException;
 
 public class TimelineService extends ConnectivityAwareIntentService {
 

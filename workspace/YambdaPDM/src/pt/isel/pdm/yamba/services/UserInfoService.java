@@ -1,15 +1,14 @@
 package pt.isel.pdm.yamba.services;
 
+import pt.isel.pdm.yamba.YambaPDMApplication;
+import winterwell.jtwitter.Twitter;
+import winterwell.jtwitter.Twitter_Users;
+import winterwell.jtwitter.User;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-
-import pt.isel.pdm.yamba.YambaPDMApplication;
-import winterwell.jtwitter.Twitter;
-import winterwell.jtwitter.Twitter_Users;
-import winterwell.jtwitter.User;
 
 public class UserInfoService extends Service {
 
