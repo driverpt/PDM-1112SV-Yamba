@@ -41,7 +41,7 @@ public class YambaPost implements Parcelable{
     }
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(_id);
-        dest.writeString(_date.toString());
+        dest.writeLong(_date.getTime());
         dest.writeString(_tweet);
         dest.writeString(_user); // Twitter.User is not Parcelable
     }
@@ -56,7 +56,7 @@ public class YambaPost implements Parcelable{
     };
     private YambaPost(Parcel in) {
         _id = in.readLong();
-        _date = new Date(in.readString());
+        _date = new Date(in.readLong());
         _tweet = in.readString();
         _user = in.readString();
     }

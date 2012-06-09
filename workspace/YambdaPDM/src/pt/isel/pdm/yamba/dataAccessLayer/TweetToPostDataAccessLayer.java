@@ -13,50 +13,68 @@ import pt.isel.pdm.yamba.provider.contract.TweetPostContract;
 
 public class TweetToPostDataAccessLayer {
 
-    //GetMethods
-    public static List<TweetToPost> getTweetsToPost(ContentResolver resolver){
-        Cursor cursor = resolver.query(
-                TweetPostContract.CONTENT_URI,
-                getProjection(),
-                null,
-                null,
-                String.format("%s DESC", TweetPostContract.TIMESTAMP ) );
+    // GetMethods
+    public static List<TweetToPost> getTweetsToPost(ContentResolver resolver) {
+        Cursor cursor = null;
         List<TweetToPost> toReturn = new LinkedList<TweetToPost>();
-        if(cursor != null && cursor.getCount() > 0){
-            while (cursor.moveToNext()) {
-                toReturn.add(getTweetToPostFromCursor(cursor));
+        try {
+            cursor = resolver.query( TweetPostContract.CONTENT_URI
+                                   , getProjection()
+                                   , null
+                                   , null
+                                   , String.format("%s DESC", TweetPostContract.TIMESTAMP)
+                                   );
+
+            if (cursor != null && cursor.getCount() > 0) {
+                while (cursor.moveToNext()) {
+                    toReturn.add(getTweetToPostFromCursor(cursor));
+                }
             }
-            cursor.close();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+
         }
         return toReturn;
     }
-    
-    //Insert Methods
-    public static void insertTweetToPost(ContentResolver resolver, TweetToPost tweet){
-        resolver.insert(TweetPostContract.CONTENT_URI, getContentValuesFromTweetToPost(tweet));
+
+    // Insert Methods
+    public static void insertTweetToPost(ContentResolver resolver,
+            TweetToPost tweet) {
+        resolver.insert(TweetPostContract.CONTENT_URI,
+                getContentValuesFromTweetToPost(tweet));
     }
-    
-    //Delete Method
-    public static boolean deleteTweetToPost(ContentResolver resolver, TweetToPost tweet){
-        int deletedLines = resolver.delete( TweetPostContract.CONTENT_URI, TweetPostContract.TIMESTAMP + "=?", new String[] { String.valueOf( tweet.getDate().getTime() ) } );
+
+    // Delete Method
+    public static boolean deleteTweetToPost(ContentResolver resolver,
+            TweetToPost tweet) {
+        int deletedLines = resolver.delete(TweetPostContract.CONTENT_URI,
+                TweetPostContract.TIMESTAMP + "=?",
+                new String[] { String.valueOf(tweet.getDate().getTime()) });
         return deletedLines != 0;
     }
-    
-    //Aux methods
+
+    // Aux methods
     private static String[] getProjection() {
-        return new String[]{ TweetPostContract.TIMESTAMP, TweetPostContract.DATE, TweetPostContract.TWEET };
+        return new String[] { TweetPostContract.TIMESTAMP,
+                TweetPostContract.DATE, TweetPostContract.TWEET };
     }
-    
-    public static TweetToPost getTweetToPostFromCursor(Cursor cursor){
-        Date date = new Date(cursor.getLong(cursor.getColumnIndex(TweetPostContract.TIMESTAMP) ) );
-        String text = cursor.getString(cursor.getColumnIndex(TweetPostContract.TWEET));
-        return new TweetToPost(date,text);
+
+    public static TweetToPost getTweetToPostFromCursor(Cursor cursor) {
+        Date date = new Date(cursor.getLong(cursor
+                .getColumnIndex(TweetPostContract.TIMESTAMP)));
+        String text = cursor.getString(cursor
+                .getColumnIndex(TweetPostContract.TWEET));
+        return new TweetToPost(date, text);
     }
-    public static ContentValues getContentValuesFromTweetToPost(TweetToPost tweet){
+
+    public static ContentValues getContentValuesFromTweetToPost(
+            TweetToPost tweet) {
         ContentValues cv = new ContentValues();
-        cv.put(TweetPostContract.TIMESTAMP, tweet.getDate().getTime() );
-        cv.put(TweetPostContract.DATE     , tweet.getDate().toLocaleString() );
-        cv.put(TweetPostContract.TWEET    , tweet.getText());
+        cv.put(TweetPostContract.TIMESTAMP, tweet.getDate().getTime());
+        cv.put(TweetPostContract.DATE, tweet.getDate().toLocaleString());
+        cv.put(TweetPostContract.TWEET, tweet.getText());
         return cv;
     }
 }
