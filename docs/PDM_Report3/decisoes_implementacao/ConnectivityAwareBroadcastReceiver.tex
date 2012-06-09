@@ -1,0 +1,3 @@
+\section{\texttt{ConnectivityAwareBroadcastReceiver}}
+
+É um \textit{BroadcastReceiver} susceptível a alterações de Rede. O programador apenas implementa a condição de teste de conectividade e a acção a a ser executada caso exista alteração no estado de conectividade. À semelhança da \textit{AsyncTask}, existe um método \texttt{onPostConnectivityChange} que irá ser chamado caso existam alterações de conectividade. Existem vários \textit{broadcasts} de alteração do estado do dispositivo de conectividade mas que não interrompem a mesma, pois este \textit{receiver} previne essa situação.

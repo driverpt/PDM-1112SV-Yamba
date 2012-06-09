@@ -1,0 +1,19 @@
+\subsection{Notas}
+  
+Não é possível utilizar o \textit{LocalBroadcastReceiver} por causa do \textit{widget} cuja configuração do \textit{provider} é feita no XML sendo que o nível da API utilizado não suporta o \textit{LocalBroadcastManager}, apenas é possível utilizar programaticamente através do \textit{Google Support Package}.
+  
+O \textit{TimelineService} provoca o aparecimento de uma notificação na barra de notificações caso existam novos \textit{tweets}. O mesmo acontece para o \textit{BroadcastReceiver}, o que optimiza a utilização de recursos do dispositivo.
+  
+ A actualização automática do \textit{timeline} apenas é feita caso exista conectividade \textit{WiFi},sendo que o \textit{BroadcastReceiver} apenas monitoriza este tipo de ligação.
+  
+O \textit{widget} apenas apresenta o último \textit{tweet} na \textit{timeline}.O respectivo \textit{provider} está também susceptível a \textit{broadcasts} de actualização da \textit{timeline} armazenada localmente.
+  
+ Foi actualizado o JTwitter para a última versão disponível no site da Winterwell por forma a corrigir vários bugs já reconhecidos e corrigidos na última versão.
+  
+ O \textit{package} de \textit{Android Support} inclui algumas funcionalidades implementadas nos últimos níveis de API que permite a utilização em versões anteriores, por forma a agilizar o desenvolvimento com as novas \textit{features}.
+
+  - Existem dois BroadcastReceivers no object YambaPDMApplication, os dois susceptíveis a alterações de conectividade, contudo, um deles apenas está susceptível a alterações da conectividade WiFi. Este último é utilizado para o agendamento de actualizações automáticas do Timeline via Alarm Manager.
+  
+\textit{Nice to have} não implementados:
+  - \textit{LocalBroadcasts} para minimizar os recursos ocupados pelo sistema operativo.
+  - Guardar as fotografias dos utilizadores em \textit{cache} local do dispositivo.

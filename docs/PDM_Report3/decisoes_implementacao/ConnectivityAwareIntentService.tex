@@ -1,0 +1,3 @@
+\section{\texttt{ConnectivityAwareIntentService}}
+
+Classe implementada para tornar todos os serviços que a extendem susceptíveis a alterações de conectividade, com base no \textit{broadcast receiver} mencionado anteriormente. Existem 2 métodos que são chamados aquando as alterações de conectividade, onConnectivityAvailable() e onConnectivityUnavailable(), o que corresponde a eventos de existência ou não de conectividade, que irão permitir os respectivos serviços reagir a estas duas situações. É particularmente útil na publicação de Status para saber se existe conectividade disponível, por forma a evitar um pedido HTTP.

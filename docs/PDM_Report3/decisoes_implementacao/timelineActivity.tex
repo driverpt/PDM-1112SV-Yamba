@@ -1,0 +1,3 @@
+\section{\texttt{TimelineActivity}}
+
+Alterou-se a actividade do \textit{timeline} para reflectir as novas alterações na aplicação, mais concretamente passa-se a utilizar um \texttt{CursorAdapter} ao invés de um \texttt{Adapter}, facilitando o acesso e manutenção dos dados que agora se encontram numa base de dados local \textit{SQLite}. Este Cursor é mantido em memória volátil enquanto os seus dados são consumidos pela \textit{view}. É fechado automaticamente (conforme indicado na documentação) caso seja definido outro cursor para fornecer dados à \textit{view}.
