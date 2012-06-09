@@ -17,17 +17,24 @@ public class TweetDataAccessLayer {
     
     //Get Mehtods
     public static YambaPost getTweet(ContentProvider provider, long id){
-        Cursor cursor = provider.query(
-                TweetContract.CONTENT_URI,
-                getProjection(),
-                String.format("%s = ?", TweetContract._ID),
-                new String[]{id+""},null);
+        Cursor cursor = null;
+        try {
+        cursor = provider.query( TweetContract.CONTENT_URI
+                               , getProjection()
+                               , String.format("%s = ?", TweetContract._ID)
+                               , new String[]{ id+"" }
+                               , null
+                               );
         
         if(cursor != null && cursor.getCount() == 1){
             cursor.moveToNext();
             YambaPost post = getTwitterStatusFromCursor(provider,cursor);
-            cursor.close();
             return post;
+        }
+        } finally {
+            if( cursor != null ) {
+                cursor.close();
+            }
         }
         return null;
     }
