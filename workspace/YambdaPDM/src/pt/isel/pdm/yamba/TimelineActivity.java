@@ -2,14 +2,17 @@ package pt.isel.pdm.yamba;
 
 import java.util.Date;
 
+import android.app.AlertDialog;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -29,28 +32,27 @@ import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
 import pt.isel.pdm.yamba.model.YambaPost;
-import pt.isel.pdm.yamba.model.YambaUser;
 import pt.isel.pdm.yamba.provider.contract.TweetContract;
 import pt.isel.pdm.yamba.provider.helper.EmailHelper;
 import pt.isel.pdm.yamba.services.TimelineService;
 
 public class TimelineActivity extends PreferencesEnabledActivity implements OnClickListener, OnItemClickListener {
 
-    private static final String       LOGGER_TAG                       = "Timeline Activity";
+    private static final String LOGGER_TAG                       = "Timeline Activity";
 
-    private static final String       TERMINATOR_SHORT_TEXT_TERMINATOR = "...";
-    private static final int          MAX_CHARS_NO_LIMIT               = 140;
-    private static final int          DEFAULT_MAX_TWEETS               = 50;
+    private static final String TERMINATOR_SHORT_TEXT_TERMINATOR = "...";
+    private static final int    MAX_CHARS_NO_LIMIT               = -1;
+    private static final int    MAX_TWEETS_NO_LIMIT              = -1;
 
-    private boolean                   isFirstTime                      = true;
+    private boolean             isFirstTime                      = true;
 
-    private ListView                  view;
-    private CursorAdapter             mCursorAdapter;
-    private Button                    refreshButton;
+    private ListView            view;
+    private CursorAdapter       mCursorAdapter;
+    private Button              refreshButton;
 
-    private BroadcastReceiver         mReceiver;
+    private BroadcastReceiver   mReceiver;
 
-    private YambaPDMApplication       app;
+    private YambaPDMApplication app;
 
     private class TimelineUpdatedBroadcastReceiver extends BroadcastReceiver {
         @Override
@@ -71,24 +73,53 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
         mReceiver = new TimelineUpdatedBroadcastReceiver();
     }
 
+    // TODO: Create a class just to Handle Widget Actions. SRP ( Single Responsability Principle )
+    private void configureWidget( Intent intent ) {
+        Log.d( LOGGER_TAG, String.format("Widget Intent =%s", intent) );
+        if ( AppWidgetManager.ACTION_APPWIDGET_CONFIGURE.equals( intent.getAction() ) ) {
+
+            /*
+             * Intent update = new Intent(this,WidgetProvider.class);
+             * update.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+             * sendBroadcast(update);
+             */
+
+            AlertDialog.Builder builder = new AlertDialog.Builder( this );
+            builder.setMessage( "Widget Installed" )
+                   .setPositiveButton( "OK", new DialogInterface.OnClickListener() {
+                       public void onClick( DialogInterface dialog, int id ) {
+                           TimelineActivity.this.finish();
+                       }
+                   });
+            AlertDialog alert = builder.create();
+            int widgetId = intent.getIntExtra( AppWidgetManager.EXTRA_APPWIDGET_ID, -1 );
+            Intent result = new Intent();
+            result.putExtra( AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId );
+            setResult( RESULT_OK, result );
+            alert.show();
+        }
+    }
+
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         setContentView( R.layout.timeline );
 
         super.onCreate( savedInstanceState );
-        view = ( ListView ) findViewById( android.R.id.list );
+
+        configureWidget( getIntent() );
+
+        view = (ListView) findViewById( android.R.id.list );
 
         // registers the listview for the context menu
         registerForContextMenu( view );
 
-        app = ( YambaPDMApplication ) getApplication();
+        app = (YambaPDMApplication) getApplication();
 
         view.setOnItemClickListener( this );
 
-        refreshButton = ( Button ) findViewById( R.id.refreshButton );
+        refreshButton = (Button) findViewById( R.id.refreshButton );
         refreshButton.setOnClickListener( this );
-
-        YambaPDMApplication app = ( YambaPDMApplication ) getApplication();
+        
         // if ( app.lastRefresh != null && !app.lastRefresh.isEnabled() ) {
         disableRefresh();
         // }
@@ -99,7 +130,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
 
         view.setAdapter( mCursorAdapter );
 
-        LocalBroadcastManager.getInstance( this ).registerReceiver( mReceiver, mReceiverFilter );
+        registerReceiver( mReceiver, mReceiverFilter );
 
         if ( isFirstTime ) {
             updateCursor();
@@ -127,22 +158,31 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
 
         @Override
         public void bindView( View view, Context context, Cursor cursor ) {
-            ImageView photoView = ( ImageView ) view.findViewById( R.id.photoUri );
-            TextView userView = ( TextView ) view.findViewById( R.id.user );
-            TextView tweetView = ( TextView ) view.findViewById( R.id.tweet );
-            TextView dateView = ( TextView ) view.findViewById( R.id.date );
-            
+            ImageView photoView = (ImageView) view.findViewById( R.id.photoUri );
+            TextView userView = (TextView) view.findViewById( R.id.user );
+            TextView tweetView = (TextView) view.findViewById( R.id.tweet );
+            TextView dateView = (TextView) view.findViewById( R.id.date );
+
             ViewHolder holder = new ViewHolder();
             holder.photo = photoView;
             holder.user = userView;
             holder.date = dateView;
             holder.tweet = tweetView;
-            
+
             view.setTag( holder );
-            
+
             String screenName = cursor.getString( cursor.getColumnIndex( TweetContract.USER ) );
-            long timestamp = cursor.getLong( cursor.getColumnIndex( TweetContract.TIMESTAMP ) );           
+            long timestamp = cursor.getLong( cursor.getColumnIndex( TweetContract.TIMESTAMP ) );
             String tweet = cursor.getString( cursor.getColumnIndex( TweetContract.TWEET ) );
+            
+            SharedPreferences prefs = app.getSharedPreferences();
+            
+            Integer maxChars = Integer.parseInt( prefs.getString( PrefsActivity.KEY_MAX_PRESENTED_CHARS, String.valueOf(MAX_CHARS_NO_LIMIT) ) );
+            if ( maxChars != MAX_CHARS_NO_LIMIT ) {
+                if( tweet.length() > maxChars ) {
+                    tweet = tweet.substring( 0, maxChars ) + TERMINATOR_SHORT_TEXT_TERMINATOR;
+                }
+            }
             
             dateView.setText( DateUtils.getRelativeTimeSpanString( timestamp ).toString() );
             tweetView.setText( tweet );
@@ -153,11 +193,16 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
     private class TimelineCursorUpdateTask extends AsyncTask< Void, Void, Cursor > {
 
         @Override
-        protected Cursor doInBackground( Void ... params ) {
+        protected Cursor doInBackground( Void... params ) {
+            SharedPreferences prefs = app.getSharedPreferences();
+            Integer maxTweets = Integer.parseInt( prefs.getString( PrefsActivity.KEY_MAX_PRESENTED_TWEETS, String.valueOf(MAX_TWEETS_NO_LIMIT) ) );
+            
+            String orderByClause = "timestamp DESC".concat( ( maxTweets != MAX_TWEETS_NO_LIMIT ) ? String.format(" LIMIT %d", maxTweets ) : "" ) ;
+            
             Cursor mNewCursor = getContentResolver()
                     .query( TweetContract.CONTENT_URI,
                             new String[] { TweetContract._ID, TweetContract.TIMESTAMP, TweetContract.TWEET,
-                                    TweetContract.USER }, null, null, "timestamp DESC" );
+                                    TweetContract.USER }, null, null, orderByClause );
             return mNewCursor;
         }
 
@@ -188,7 +233,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
 
     @Override
     protected void onDestroy() {
-        LocalBroadcastManager.getInstance( this ).unregisterReceiver( mReceiver );
+        unregisterReceiver( mReceiver );
         super.onDestroy();
     }
 
@@ -201,7 +246,7 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
     }
 
     private void enableRefresh() {
-        Button refresh = ( ( YambaPDMApplication ) getApplication() ).lastRefresh;
+        Button refresh = ((YambaPDMApplication) getApplication()).lastRefresh;
         refresh.setEnabled( true );
     }
 
@@ -215,9 +260,9 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
 
     @Override
     public boolean onContextItemSelected( MenuItem item ) {
-        AdapterContextMenuInfo info = ( AdapterContextMenuInfo ) item.getMenuInfo();
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 
-        Cursor cursor = ( Cursor ) view.getItemAtPosition( info.position );
+        Cursor cursor = (Cursor) view.getItemAtPosition( info.position );
 
         // YambaPost status = ( YambaPost ) view.getItemAtPosition( info.position );
 
@@ -239,13 +284,13 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
         Intent intent = new Intent( this, DetailActivity.class );
         intent.addFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
 
-        Cursor cursor = ( Cursor ) parent.getItemAtPosition( position );
+        Cursor cursor = (Cursor) parent.getItemAtPosition( position );
 
         long _id = cursor.getLong( cursor.getColumnIndex( TweetContract._ID ) );
         String screenName = cursor.getString( cursor.getColumnIndex( TweetContract.USER ) );
         Date tweetDate = new Date( cursor.getLong( cursor.getColumnIndex( TweetContract.TIMESTAMP ) ) );
         String tweet = cursor.getString( cursor.getColumnIndex( TweetContract.TWEET ) );
-        
+
         YambaPost status = new YambaPost( _id, screenName, tweetDate, tweet );
 
         // YambaPost status = timeline.get( position );

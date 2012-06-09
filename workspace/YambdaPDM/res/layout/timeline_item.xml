@@ -36,8 +36,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#000000"
-                android:textSize="5pt" 
-                android:textStyle="bold"/>
+                android:textSize="5pt"
+                android:textStyle="bold"
+                android:text="USERNAME"
+                />
 
             <TextView
                 android:id="@+id/date"
@@ -46,7 +48,9 @@
                 android:layout_weight="1.0"
                 android:gravity="right"
                 android:textColor="#3F92D2"
-                android:textSize="5pt" />
+                android:textSize="5pt" 
+                android:text="DATE"
+                />
         </LinearLayout>
 
         <TextView
@@ -55,7 +59,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textColor="#0B61A4"
-            android:textSize="6pt" />
+            android:textSize="6pt"
+            android:text="TWEET"
+            />
     </LinearLayout>
 
 </LinearLayout>

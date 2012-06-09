@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp"
+    android:orientation="vertical"
+    android:padding="5dp" 
+    android:background="@drawable/back_shape">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:orientation="horizontal" 
+            >
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#000000"
+                android:src="@drawable/ic_tweets_widget" />
+
+            <!-- android:layout_marginLeft="@dimen/standard_spacing" -->
+            <!-- android:id="@id/icon_item" -->
+            <!-- android:src="@drawable/ic_tweets_widget" /> -->
+
+            <TextView
+                android:id="@+id/header_text_item"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:focusable="false"
+                android:gravity="center"
+                android:text="USERNAME"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <include 
+            android:id="@+id/widgetItem"
+            layout="@layout/widget_item" />
+    </LinearLayout>
+
+</LinearLayout>

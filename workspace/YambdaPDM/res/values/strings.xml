@@ -40,6 +40,7 @@
     <string name="act_userinfo_pd_text">Loading user information. Please wait.</string>
     <string name="friendsDescription">Friends</string>
     <string name="followersDescription">Followers</string>
+    <string name="favouritesDescription">Favourites</string>
     <string name="postsCountDescription">Posts</string>
     <string name="auto_timeline_update">Timeline Auto Updates</string>
     <string name="auto_timeline_update_sum">Enables or Disables Timeline Automatic Update</string>
@@ -47,4 +48,7 @@
     <string name="timelinectxmenu_title">Do what with tweet?</string>
     <string name="timelineitem_emailsubject">Check out this tweet!</string>
     <string name="menu_clear_cache">Clear Cache</string>
+    <string name="notification_new_tweets_ticker">New Tweets have arrived</string>
+    <string name="notification_new_tweets_short">New Tweets</string>
+    <string name="notification_new_tweets_detail">Timeline has been updated</string>
     </resources>

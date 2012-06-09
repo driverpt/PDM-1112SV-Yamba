@@ -1,7 +1,6 @@
 package pt.isel.pdm.yamba.services;
 
 import android.app.IntentService;
-import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.net.NetworkInfo;
 import android.util.Log;

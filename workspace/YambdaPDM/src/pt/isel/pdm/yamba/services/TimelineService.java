@@ -2,20 +2,25 @@ package pt.isel.pdm.yamba.services;
 
 import java.util.List;
 
-import pt.isel.pdm.yamba.YambaPDMApplication;
-import pt.isel.pdm.yamba.provider.contract.TweetContract;
-import winterwell.jtwitter.Status;
-import winterwell.jtwitter.Twitter;
-import winterwell.jtwitter.TwitterException;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
+
+import pt.isel.pdm.yamba.R;
+import pt.isel.pdm.yamba.TimelineActivity;
+import pt.isel.pdm.yamba.YambaPDMApplication;
+import pt.isel.pdm.yamba.provider.contract.TweetContract;
+import winterwell.jtwitter.Status;
+import winterwell.jtwitter.Twitter;
+import winterwell.jtwitter.TwitterException;
 
 public class TimelineService extends ConnectivityAwareIntentService {
 
@@ -29,12 +34,15 @@ public class TimelineService extends ConnectivityAwareIntentService {
 
     public static final int       INVALID_OPERATION     = -1;
     public static final String    OPERATION             = "Timeline Operation";
-
-    private LocalBroadcastManager localBcast;
+    
+    // 43690 = 101010101010 = XOXOX :P
+    public static final int       NOTIFICATION_BAR_INTEGER_TAG = 43690;
 
     private Handler               mainThreadHandler;
 
     private Intent                mTimelineUpdateIntent;
+    
+    private PendingIntent         mNotificationBarPendingIntent;
 
     public TimelineService() {
         super( "TimelineService" );
@@ -45,7 +53,6 @@ public class TimelineService extends ConnectivityAwareIntentService {
         super.onCreate();
         Log.d( LOGGER_TAG, "onCreate()" );
         mainThreadHandler = new Handler();
-        localBcast = LocalBroadcastManager.getInstance( this );
     }
 
     private void initTimelineUpdateIntent() {
@@ -55,8 +62,16 @@ public class TimelineService extends ConnectivityAwareIntentService {
         }
     }
 
+    private void initNotificationBarPendingIntent() {
+        if ( mNotificationBarPendingIntent == null ) {
+            Intent startActivityIntent = new Intent( getApplicationContext(), TimelineActivity.class );
+            startActivityIntent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
+            mNotificationBarPendingIntent = PendingIntent.getActivity( getApplicationContext(), 0, startActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT );
+        }
+    }    
+    
     private void sendTimelineUpdateBroadcast() {
-        localBcast.sendBroadcast( mTimelineUpdateIntent );
+        sendBroadcast( mTimelineUpdateIntent );
     }
 
     @Override
@@ -99,6 +114,22 @@ public class TimelineService extends ConnectivityAwareIntentService {
                         getContentResolver().insert( TweetContract.CONTENT_URI, values );
                     }
 
+                    if ( twitterStatus.size() != 0 ) {
+                        initNotificationBarPendingIntent();
+                        Notification notification = new Notification( android.R.drawable.ic_popup_sync
+                                                                    , getString( R.string.notification_new_tweets_ticker )
+                                                                    , System.currentTimeMillis() 
+                                                                    );
+                        NotificationManager mNotificationManager = ( NotificationManager ) getSystemService( NOTIFICATION_SERVICE );
+                        notification.flags = Notification.FLAG_AUTO_CANCEL;
+                        notification.setLatestEventInfo( getApplicationContext()
+                                                       , getString( R.string.notification_new_tweets_short )
+                                                       , getString( R.string.notification_new_tweets_detail )
+                                                       , mNotificationBarPendingIntent 
+                                                       );
+                        mNotificationManager.notify( NOTIFICATION_BAR_INTEGER_TAG, notification );
+                    }
+                    
                     initTimelineUpdateIntent();
 
                     mTimelineUpdateIntent.putExtra( OPERATION, TIMELINE_UPDATE_OK );
