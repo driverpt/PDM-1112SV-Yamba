@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,10 +15,9 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import pt.isel.pdm.yamba.model.YambaPost;
 import pt.isel.pdm.yamba.provider.helper.EmailHelper;
 import pt.isel.pdm.yamba.services.UserInfoService;
-
-import pt.isel.pdm.yamba.model.YambaPost;
 
 public class DetailActivity extends PreferencesEnabledActivity implements OnClickListener {
 

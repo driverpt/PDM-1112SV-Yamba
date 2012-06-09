@@ -43,16 +43,19 @@ public abstract class PreferencesEnabledActivity extends Activity {
         }
     }
 
-    /** Process Item Menu selected */
+    /** Process Item Menu selected **/
     @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
         switch ( item.getItemId() ) {
             case R.id.terminate:
                 finish();
                 return true;
-            case R.id.prefs:
-                startActivity( new Intent( this, PrefsActivity.class ) );
+            case R.id.prefs: {
+                Intent intent = new Intent( this, PrefsActivity.class );
+                intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
+                startActivity( intent );
                 return true;
+            }
             case R.id.timeline: {
                 Intent intent = new Intent( this, TimelineActivity.class );
                 intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
@@ -67,7 +70,7 @@ public abstract class PreferencesEnabledActivity extends Activity {
             }
             case R.id.userinfo: {
                 Intent intent = new Intent( this, UserInfoActivity.class );
-                YambaPDMApplication app = ( YambaPDMApplication ) getApplication();
+                YambaPDMApplication app = (YambaPDMApplication) getApplication();
                 String screenName = app.getTwitter().getScreenName();
                 intent.addFlags( Intent.FLAG_ACTIVITY_NO_HISTORY );
                 intent.putExtra( UserInfoService.USER_SCREEN_NAME, screenName );
@@ -83,5 +86,4 @@ public abstract class PreferencesEnabledActivity extends Activity {
         }
         return super.onOptionsItemSelected( item );
     }
-
 }

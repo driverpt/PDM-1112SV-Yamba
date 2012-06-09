@@ -53,5 +53,18 @@
             android:authorities="pt.isel.pdm.yamba.providers"
             >
         </provider>
+        <receiver android:name=".widget.YambaTimelineWidgetProvider" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"   />
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED"  />
+                <action android:name="android.appwidget.action.APPWIDGET_DISABLED" />
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED"  />
+                <action android:name="pt.isel.pdm.yamba.TIMELINE_UPDATED"          />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
+        
     </application>
 </manifest>
