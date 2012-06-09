@@ -8,16 +8,20 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import pt.isel.pdm.yamba.provider.helper.EmailHelper;
 import pt.isel.pdm.yamba.services.UserInfoService;
 
 import pt.isel.pdm.yamba.model.YambaPost;
 
-public class DetailActivity extends Activity implements OnClickListener {
+public class DetailActivity extends PreferencesEnabledActivity implements OnClickListener {
 
     private TextView  tweetView;
     private TextView  userView;
@@ -26,6 +30,8 @@ public class DetailActivity extends Activity implements OnClickListener {
 
     private ImageView userImage;
 
+    private YambaPost tStatus;
+    
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
@@ -54,7 +60,7 @@ public class DetailActivity extends Activity implements OnClickListener {
         Bundle extras = intent.getExtras();
 
         // User user = extras.getParcelable(User.IDENTIFIER);
-        YambaPost tStatus = extras.getParcelable( YambaPost.IDENTIFIER );
+        tStatus = extras.getParcelable( YambaPost.IDENTIFIER );
 
         long tweetId = tStatus.getId();
         String tweet = tStatus.getTweet();
@@ -68,7 +74,6 @@ public class DetailActivity extends Activity implements OnClickListener {
         tweetView.setText( tweet );
         userView.setText( username );
         dateView.setText( dateFormat.format( tweetDate ) );
-       
     }
 
     public void onClick( View v ) {
@@ -76,5 +81,24 @@ public class DetailActivity extends Activity implements OnClickListener {
         Intent intent = new Intent( this, UserInfoActivity.class );
         intent.putExtra( UserInfoService.USER_SCREEN_NAME, screenName );
         startActivity( intent );
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.timeline_context_menu, menu);
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.timelineemailctxmenu_sendemail:
+              Intent it = EmailHelper.getEmailIntent(getString(R.string.timelineitem_emailsubject) , tStatus);
+              startActivity( it );
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

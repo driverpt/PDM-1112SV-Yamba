@@ -31,6 +31,7 @@ import android.widget.TextView;
 import pt.isel.pdm.yamba.model.YambaPost;
 import pt.isel.pdm.yamba.model.YambaUser;
 import pt.isel.pdm.yamba.provider.contract.TweetContract;
+import pt.isel.pdm.yamba.provider.helper.EmailHelper;
 import pt.isel.pdm.yamba.services.TimelineService;
 
 public class TimelineActivity extends PreferencesEnabledActivity implements OnClickListener, OnItemClickListener {
@@ -228,12 +229,8 @@ public class TimelineActivity extends PreferencesEnabledActivity implements OnCl
         YambaPost status = new YambaPost( id, screenName, tweetDate, tweet );
 
         if ( item.getItemId() == R.id.timelineemailctxmenu_sendemail ) {
-            Intent it = new Intent( Intent.ACTION_SEND );
-            
-            it.setType( "message/rfc822" );
-            it.putExtra( Intent.EXTRA_SUBJECT, getString( R.string.timelineitem_emailsubject ) );
-            it.putExtra( Intent.EXTRA_TEXT, status.getDataForEmail() );
-            startActivity( it );
+          Intent it = EmailHelper.getEmailIntent(getString(R.string.timelineitem_emailsubject) , status);
+          startActivity( it );
         }
         return true;
     }
