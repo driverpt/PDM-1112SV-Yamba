@@ -26,6 +26,7 @@ public class TweetToPostDataAccessLayer {
             while (cursor.moveToNext()) {
                 toReturn.add(getTweetToPostFromCursor(cursor));
             }
+            cursor.close();
         }
         return toReturn;
     }
