@@ -3,21 +3,18 @@ package pt.isel.pdm.yamba.services;
 import java.util.Date;
 import java.util.List;
 
-import android.content.Intent;
-import android.net.NetworkInfo;
-import android.os.Handler;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
-import android.widget.Toast;
-
-import winterwell.jtwitter.TwitterException;
-
 import pt.isel.pdm.yamba.YambaPDMApplication;
 import pt.isel.pdm.yamba.dataAccessLayer.TweetDataAccessLayer;
 import pt.isel.pdm.yamba.dataAccessLayer.TweetToPostDataAccessLayer;
 import pt.isel.pdm.yamba.model.TweetToPost;
 import winterwell.jtwitter.Status;
 import winterwell.jtwitter.Twitter;
+import winterwell.jtwitter.TwitterException;
+import android.content.Intent;
+import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
+import android.widget.Toast;
 
 public class StatusPublishingService extends ConnectivityAwareIntentService {
 

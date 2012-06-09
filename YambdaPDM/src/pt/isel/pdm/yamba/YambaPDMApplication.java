@@ -98,6 +98,7 @@ public class YambaPDMApplication extends Application implements OnSharedPreferen
     private void initPendingIntent() {
         Intent intent = new Intent( this, TimelineService.class );
         intent.putExtra( TimelineService.OPERATION, TimelineService.MSG_UPDATE_TIMELINE );
+        intent.putExtra( TimelineService.NOTIFICATION_SERVICE, true );
         mScheduleTimelinePendingIntent = PendingIntent.getService( this, 0, intent, 0 );
     }
 

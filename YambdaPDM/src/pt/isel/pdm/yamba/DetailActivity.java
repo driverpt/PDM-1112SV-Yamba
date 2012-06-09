@@ -71,7 +71,6 @@ public class DetailActivity extends Activity implements OnClickListener {
        
     }
 
-    @Override
     public void onClick( View v ) {
         String screenName = userView.getText().toString();
         Intent intent = new Intent( this, UserInfoActivity.class );
