@@ -1,0 +1,11 @@
+\section{Alterações estruturais, novas actividades e notas}
+\subsection{\textit{Data Access Layer}}
+
+É um conjunto de \textit{helper classes} criadas para assistir às operações com a base de dados, aproveitando também os objectos criados como \textit{objectos de domínio}, \texttt{YambaPost} e \texttt{YambaUser}. Este código é comum a toda aplicação, visto que existe dependência de uma base de dados.
+
+\subsection{\texttt{DetailActivity}}  
+Toda a informação relativa ao utilizador é agora apresentada na \texttt{UserInfoActivity} após carregar na fotografia.
+
+
+\subsection{\texttt{TimelineService}}  
+Acede ao \textit{Twitter} e carregar os \textit{tweets} para uma base de dados \textit{SQLite}, que acabará por servir a \texttt{TimelineActivity}.
