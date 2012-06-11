@@ -1,0 +1,13 @@
+\subsection{\texttt{Acesso a dados}}
+%%\label{sec:dataAccess}
+
+Durante o desenvolver da aplicação sempre existiu uma grande necessidade de armazenar os dados temporariamente para que estes pudessem ser reutilizados mais tarde e garantir assim uma obtenção mais rápida e sem necessidade de gasto de recursos ou da existência deles, como é o caso de uma ligação à Internet.
+Outro dos grandes problemas existentes estava também relacionado com a submissão de mensagens tardia, ou seja, o agendamento das mesmas devido à inexistência de conectividade.
+
+Com a introdução dos \texttt{ContentProviders} foi então possível implementar mecanismos que respondessem às necessidades encontradas.
+
+Com a nova versão da aplicação é adicionado então um \texttt{ContentProvider} - \texttt{TwitterProvider} que permite armazenar dados numa base de dados \textit{SQLite}. Este \textit{provider} é gerido pelo \texttt{TwitterHelper} que é uma implementação de \texttt{SQLiteOpenHelper} que é responsável pelas acções de \textit{Create}, \textit{Drop} e \textit{Upgrade} do \textit{provider}.
+
+Para poder utilizar o \textit{provider} são então disponibilizadas três classes de contracto de comunicação com o provider, para uniformizar a sua utilização. São estas o \texttt{TweetContract}, \texttt{TweetPostContract} e o \texttt{UserContract}.
+
+Uma vez que um \texttt{ContentProvider} disponibiliza apenas um recurso sobre o qual podemos realizar operações CRUD, é então criada uma camada de acesso a dados \textit{(DAL - Data Access Layer)} que permite efectuar as operações CRUD mas com uma camada de abstracção, facilitando assim as \textit{queries} de acesso a dados e a manipulação dos dados retornados.
